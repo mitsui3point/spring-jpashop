@@ -1,12 +1,14 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.domain.Member;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private EntityManager em;
 
     private Member memberA;
     private Member memberB;
@@ -65,10 +69,15 @@ public class MemberRepositoryTest {
         //given
         memberRepository.save(memberA);
         memberRepository.save(memberB);
-        List<Member> expected = new ArrayList<>(Arrays.asList(memberA));
+        List<Member> expected = Arrays.asList(memberA);
         //when
         List<Member> actual = memberRepository.findByName("memberA");
         //then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @AfterEach
+    void tearDown() {
+        em.flush();
     }
 }
