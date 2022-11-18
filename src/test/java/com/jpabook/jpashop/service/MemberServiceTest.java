@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.service;
 
 import com.jpabook.jpashop.domain.Member;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,6 @@ public class MemberServiceTest {
         //when
         Long joinId = memberService.join(memberA);
         Member actual = memberService.findOne(joinId);
-        em.flush(); //PersistenceContext 변경사항 DB에 반영
         //then
         assertThat(actual).isEqualTo(expected);
     }
@@ -75,5 +75,10 @@ public class MemberServiceTest {
         List<Member> actual = memberService.findAll();
         //then
         assertThat(actual).containsOnly(memberA, memberB, memberC);
+    }
+
+    @AfterEach
+    void tearDown() {
+        em.flush(); //PersistenceContext 변경사항 DB에 반영
     }
 }
