@@ -18,6 +18,7 @@ public class Member {
     @Setter
     private String name;
 
+    @Setter
     @Embedded
     private Address address;
 

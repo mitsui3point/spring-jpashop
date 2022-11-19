@@ -35,19 +35,43 @@ public class Order {
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;//주문상태[ORDER, CANCEL]
 
-    //==연관관계 메서드==
-    public void setMember(Member member) {
+    //==연관관계 메서드==//
+    private void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
     }
 
-    public void addOrderItem(OrderItem orderItem) {
+    private void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public void setDelivery(Delivery delivery) {
+    private void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
+    }
+
+    //==생성자 메서드==//
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+        }
+        order.orderDate = LocalDateTime.now();
+        order.orderStatus = OrderStatus.ORDER;
+        return order;
+    }
+
+    //==비즈니스 메서드==//
+    public void cancel() {
+        if (delivery.getDeliveryStatus() == DeliveryStatus.COMP) {
+            throw new IllegalStateException("배송이 완료된 상품은 주문취소가 불가능합니다.");
+        }
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
+        this.orderStatus = OrderStatus.CANCEL;
     }
 }

@@ -9,13 +9,13 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@Setter
 public class Delivery {
     @Id
     @GeneratedValue
     @Column(name = "delivery_id")
     private Long id;
 
-    @Setter
     @OneToOne(mappedBy = "delivery", fetch = LAZY)
     private Order order;
 
