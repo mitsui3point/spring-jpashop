@@ -13,7 +13,6 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "orders")
 @Getter
-@Setter
 public class Order {
     @Id
     @GeneratedValue

@@ -10,7 +10,6 @@ import static javax.persistence.FetchType.*;
 
 @Entity
 @Getter
-@Setter
 public class OrderItem {
     @Id
     @GeneratedValue
@@ -21,6 +20,7 @@ public class OrderItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
