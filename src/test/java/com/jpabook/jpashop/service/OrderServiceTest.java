@@ -46,7 +46,7 @@ public class OrderServiceTest {
 
         //when
         Long orderId = orderService.order(memberId, itemId, count);
-        
+
         Order actual = orderService.findOne(orderId);
         Member actualMember = actual.getMember();
         Item actualItem = actual.getOrderItems().get(0).getItem();

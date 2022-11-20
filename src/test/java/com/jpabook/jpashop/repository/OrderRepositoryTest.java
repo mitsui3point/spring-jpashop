@@ -12,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Transactional(readOnly = true)
+@Transactional
 public class OrderRepositoryTest {
     @Autowired
     private OrderRepository orderRepository;
@@ -52,7 +55,6 @@ public class OrderRepositoryTest {
     }
 
     @Test
-    @Transactional
     void 주문_데이터_저장() {
         //given
         Order order = Order.createOrder(member, delivery, orderItems);
@@ -81,6 +83,78 @@ public class OrderRepositoryTest {
         //when
         order.cancel();
         OrderStatus actual = orderRepository.findById(order.getId()).getOrderStatus();
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문_전체_조회() {
+        //given
+        Member member2 = new Member();
+        member2.setName("mem2");
+        Delivery delivery2 = new Delivery();
+        Item book3 = getBookTestData("jpa book3", 50, 10000);
+        Item book4 = getBookTestData("jpa book4", 60, 10500);
+        OrderItem[] orderItems = {
+                OrderItem.createOrderItem(book3, 12000, 40),
+                OrderItem.createOrderItem(book4, 13000, 50)
+        };
+
+        Order order = Order.createOrder(member, delivery, orderItems);
+        em.persist(member);
+        em.persist(book1);
+        em.persist(book2);
+        orderRepository.save(order);
+
+        Order order2 = Order.createOrder(member2, delivery2, orderItems);
+        em.persist(member2);
+        em.persist(book3);
+        em.persist(book4);
+        orderRepository.save(order2);
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setMemberName(member2.getName());
+        List<Order> expected = Arrays.asList(new Order[]{order2});
+
+        //when
+        List<Order> actual = orderRepository.findAllByString(orderSearch);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문_전체_조회_criteria() {
+        //given
+        Member member2 = new Member();
+        member2.setName("mem2");
+        Delivery delivery2 = new Delivery();
+        Item book3 = getBookTestData("jpa book3", 50, 10000);
+        Item book4 = getBookTestData("jpa book4", 60, 10500);
+        OrderItem[] orderItems = {
+                OrderItem.createOrderItem(book3, 12000, 40),
+                OrderItem.createOrderItem(book4, 13000, 50)
+        };
+
+        Order order = Order.createOrder(member, delivery, orderItems);
+        em.persist(member);
+        em.persist(book1);
+        em.persist(book2);
+        orderRepository.save(order);
+
+        Order order2 = Order.createOrder(member2, delivery2, orderItems);
+        em.persist(member2);
+        em.persist(book3);
+        em.persist(book4);
+        orderRepository.save(order2);
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setMemberName(member2.getName());
+        List<Order> expected = Arrays.asList(new Order[]{order2});
+
+        //when
+        List<Order> actual = orderRepository.findAllByCriteria(orderSearch);
 
         //then
         assertThat(actual).isEqualTo(expected);
