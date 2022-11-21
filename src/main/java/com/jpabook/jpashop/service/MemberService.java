@@ -19,12 +19,12 @@ public class MemberService {
      */
     @Transactional
     public Long join(Member member) {
-        validatekDuplicateMemberName(member);
+        validateDuplicateMemberName(member);
         memberRepository.save(member);
         return member.getId();
     }
 
-    private void validatekDuplicateMemberName(Member member) {
+    private void validateDuplicateMemberName(Member member) {
         boolean isExistDuplicateMember = !memberRepository.findByName(member.getName()).isEmpty();
         if (isExistDuplicateMember) {
             throw new IllegalStateException("중복된 이름이 존재합니다.");
