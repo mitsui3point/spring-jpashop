@@ -1,5 +1,7 @@
 package com.jpabook.jpashop.controller;
 
+import com.jpabook.jpashop.controller.dto.ItemDTO;
+import com.jpabook.jpashop.controller.form.BookForm;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -68,9 +70,10 @@ public class ItemController {
 
     @PostMapping("/items/{itemId}/edit")
     public String updateItem(@PathVariable(value = "itemId") Long itemId,
-                             @ModelAttribute("bookForm") @Valid BookForm bookForm) {
+                             @ModelAttribute("bookForm") @Valid BookForm form) {
 
-        itemService.saveItem(bookForm);
+        itemService.saveItem(ItemDTO
+                .getBookDTO(form));
 
         return "redirect:/items";
     }

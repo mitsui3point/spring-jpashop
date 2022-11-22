@@ -1,4 +1,4 @@
-package com.jpabook.jpashop.controller;
+package com.jpabook.jpashop.controller.dto;
 
 import com.jpabook.jpashop.domain.Address;
 import lombok.Builder;

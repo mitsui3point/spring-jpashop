@@ -1,5 +1,7 @@
 package com.jpabook.jpashop.controller;
 
+import com.jpabook.jpashop.controller.dto.MemberDTO;
+import com.jpabook.jpashop.controller.form.MemberForm;
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;

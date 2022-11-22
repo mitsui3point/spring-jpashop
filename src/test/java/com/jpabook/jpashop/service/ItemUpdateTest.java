@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.service;
 
-import com.jpabook.jpashop.controller.BookForm;
+import com.jpabook.jpashop.controller.dto.ItemDTO;
+import com.jpabook.jpashop.controller.form.BookForm;
 import com.jpabook.jpashop.domain.item.Book;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +60,12 @@ public class ItemUpdateTest {
     @Test
     void itemUpdateUsingDirtyCheckingTest() {
         //given
-        BookForm bookForm1 = new BookForm();
-        bookForm1.setName("item");
-        bookForm1.setAuthor("author1");
+        BookForm form = new BookForm();
+        form.setName("item");
+        form.setAuthor("author1");
+        ItemDTO dto1 = ItemDTO.getBookDTO(form);
         //when
-        Book actualInsert = (Book) itemService.findOne(itemService.saveItem(bookForm1));
+        Book actualInsert = (Book) itemService.findOne(itemService.saveItem(dto1));
         em.flush();
         //then
         assertThat(actualInsert.getName())
@@ -72,12 +74,12 @@ public class ItemUpdateTest {
                 .isEqualTo("author1");
 
         //given
-        BookForm bookForm2 = new BookForm();
-        bookForm2.setId(actualInsert.getId());
-        bookForm2.setName("item2");
-        bookForm2.setAuthor("author1");
+        BookForm form2 = new BookForm();
+        form2.setId(actualInsert.getId());
+        form2.setName("item2");
+        ItemDTO dto2 = ItemDTO.getBookDTO(form2);
         //when
-        Book actualUpdate = (Book) itemService.findOne(itemService.saveItem(bookForm2));
+        Book actualUpdate = (Book) itemService.findOne(itemService.saveItem(dto2));
         em.flush();
         //then
         assertThat(actualUpdate.getName())

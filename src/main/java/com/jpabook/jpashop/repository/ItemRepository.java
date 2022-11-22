@@ -1,5 +1,7 @@
 package com.jpabook.jpashop.repository;
 
+import com.jpabook.jpashop.controller.dto.ItemDTO;
+import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
