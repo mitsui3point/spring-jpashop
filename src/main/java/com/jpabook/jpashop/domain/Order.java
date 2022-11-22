@@ -33,7 +33,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Enumerated(value = EnumType.STRING)
-    private OrderStatus orderStatus;//주문상태[ORDER, CANCEL]
+    private OrderStatus status;//주문상태[ORDER, CANCEL]
 
     //==연관관계 메서드==//
     private void setMember(Member member) {
@@ -60,7 +60,7 @@ public class Order {
             order.addOrderItem(orderItem);
         }
         order.orderDate = LocalDateTime.now();
-        order.orderStatus = OrderStatus.ORDER;
+        order.status = OrderStatus.ORDER;
         return order;
     }
 
@@ -72,6 +72,6 @@ public class Order {
         for (OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
-        this.orderStatus = OrderStatus.CANCEL;
+        this.status = OrderStatus.CANCEL;
     }
 }

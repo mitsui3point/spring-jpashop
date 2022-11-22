@@ -4,6 +4,7 @@ import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -27,6 +28,7 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> findAllByString(OrderSearch orderSearch) {
         //language=JPQL
         String jpql = "select o from orders o join o.member m";
@@ -62,6 +64,7 @@ public class OrderRepository {
         return query.getResultList();
     }
 
+    @Transactional(readOnly = true)
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = cb.createQuery(Order.class);
