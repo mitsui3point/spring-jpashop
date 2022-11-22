@@ -51,7 +51,7 @@ public class OrderServiceTest {
         Member actualMember = actual.getMember();
         Item actualItem = actual.getOrderItems().get(0).getItem();
         int actualStockQuantity = actual.getOrderItems().get(0).getItem().getStockQuantity();
-        OrderStatus actualStatus = actual.getOrderStatus();
+        OrderStatus actualStatus = actual.getStatus();
 
         //then
         assertThat(actualMember).isEqualTo(expectedMember);
@@ -103,7 +103,7 @@ public class OrderServiceTest {
                 .get(0)
                 .getItem()
                 .getStockQuantity();
-        OrderStatus actualStatus = order.getOrderStatus();
+        OrderStatus actualStatus = order.getStatus();
 
         //then
         assertThat(actual).isEqualTo(expected);

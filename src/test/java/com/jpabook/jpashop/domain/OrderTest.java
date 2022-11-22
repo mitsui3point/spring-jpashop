@@ -55,7 +55,7 @@ public class OrderTest {
         Member actualMember = order.getMember();
         Delivery actualDelivery = order.getDelivery();
         List<OrderItem> actualOrderItems = order.getOrderItems();
-        OrderStatus actualOrderStatus = order.getOrderStatus();
+        OrderStatus actualOrderStatus = order.getStatus();
 
         int actualCountSum = order.getOrderItems()
                 .stream()
@@ -98,7 +98,7 @@ public class OrderTest {
         int actual = Arrays.stream(orderItems)
                 .mapToInt(orderItem -> orderItem.getItem().getStockQuantity())
                 .sum();
-        OrderStatus actualOrderStatus = order.getOrderStatus();
+        OrderStatus actualOrderStatus = order.getStatus();
         System.out.println("actual = " + actual);
         System.out.println("actualOrderStatus = " + actualOrderStatus);
 

@@ -82,7 +82,7 @@ public class OrderRepositoryTest {
 
         //when
         order.cancel();
-        OrderStatus actual = orderRepository.findById(order.getId()).getOrderStatus();
+        OrderStatus actual = orderRepository.findById(order.getId()).getStatus();
 
         //then
         assertThat(actual).isEqualTo(expected);
