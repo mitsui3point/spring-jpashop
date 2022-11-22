@@ -1,7 +1,6 @@
 package com.jpabook.jpashop.controller;
 
 import com.jpabook.jpashop.domain.item.Book;
-import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -39,7 +38,7 @@ public class ItemController {
         book.setAuthor(form.getAuthor());
         book.setIsbn(form.getIsbn());
 
-        itemService.saveItem(book);
+        itemService.saveItemMerge(book);
 
         return "redirect:/";
     }
@@ -70,16 +69,8 @@ public class ItemController {
     @PostMapping("/items/{itemId}/edit")
     public String updateItem(@PathVariable(value = "itemId") Long itemId,
                              @ModelAttribute("bookForm") @Valid BookForm bookForm) {
-        Book item = new Book();
 
-        item.setId(bookForm.getId()); //id 세팅을 임의로하는것은 권한없는 유저가 수정을하거나, id를 임의로 조작변경이 가능하기 때문에 권장하지않는 방법이다..
-        item.setName(bookForm.getName());
-        item.setPrice(bookForm.getPrice());
-        item.setStockQuantity(bookForm.getStockQuantity());
-        item.setAuthor(bookForm.getAuthor());
-        item.setIsbn(bookForm.getIsbn());
-
-        itemService.saveItem(item);
+        itemService.saveItem(bookForm);
 
         return "redirect:/items";
     }

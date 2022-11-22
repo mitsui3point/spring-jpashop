@@ -48,7 +48,7 @@ public class ItemServiceTest {
         //given
         Item expected = albumA;
         //when
-        Long saveItemId = itemService.saveItem(albumA);
+        Long saveItemId = itemService.saveItemMerge(albumA);
         Item actual = itemService.findOne(saveItemId);
         //then
         assertThat(actual).isEqualTo(expected);
@@ -59,9 +59,9 @@ public class ItemServiceTest {
         //given
         String expected = "changeItemName";
         //when
-        itemService.saveItem(albumA);
+        itemService.saveItemMerge(albumA);
         albumA.setName(expected);
-        Long mergeItemId = itemService.saveItem(albumA);
+        Long mergeItemId = itemService.saveItemMerge(albumA);
         Item actual = itemService.findOne(mergeItemId);
         //then
         assertThat(actual.getName()).isEqualTo(expected);
@@ -73,7 +73,7 @@ public class ItemServiceTest {
         List<Item> expected = Arrays.asList(new Item[]{albumA, albumB, bookA, bookB, movieA, movieB});
         //when
         for (Item item : expected) {
-            itemService.saveItem(item);
+            itemService.saveItemMerge(item);
         }
         List<Item> actual = itemService.findItems();
         //then

@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ItemRepositoryTest {
     @Autowired
     private ItemRepository itemRepository;
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     private Item albumA = new Album();
@@ -47,7 +48,7 @@ public class ItemRepositoryTest {
         //given
         Item expected = albumA;
         //when
-        itemRepository.save(albumA);
+        itemRepository.saveMerge(albumA);
         Item actual = itemRepository.findOne(albumA.getId());
         //then
         assertThat(actual).isEqualTo(expected);
@@ -58,9 +59,9 @@ public class ItemRepositoryTest {
         //given
         String expected = "bookA";
         //when
-        itemRepository.save(movieA);
+        itemRepository.saveMerge(movieA);
         movieA.setName(expected);
-        itemRepository.save(movieA);
+        itemRepository.saveMerge(movieA);
         Item actual = itemRepository.findOne(movieA.getId());
         //then
         assertThat(actual.getName()).isEqualTo(expected);
@@ -72,7 +73,7 @@ public class ItemRepositoryTest {
         List<Item> expected = Arrays.asList(new Item[]{albumA, albumB, bookA, bookB, movieA, movieB});
         //when
         for (Item item : expected) {
-            itemRepository.save(item);
+            itemRepository.saveMerge(item);
         }
         List<Item> actual = itemRepository.findAll();
         //then
