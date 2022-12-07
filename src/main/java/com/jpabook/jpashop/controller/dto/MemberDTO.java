@@ -12,7 +12,7 @@ public class MemberDTO {
     private Address address;
 
     @Builder
-    public MemberDTO(Long id, String name, Address address) {
+    private MemberDTO(Long id, String name, Address address) {
         this.id = id;
         this.name = name;
         this.address = address;

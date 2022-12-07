@@ -41,7 +41,7 @@ public class Order {
     private OrderStatus status;//주문상태[ORDER, CANCEL]
 
     @Builder
-    public Order(Member member, Delivery delivery, OrderStatus status, OrderItem... orderItems) {
+    private Order(Member member, Delivery delivery, OrderStatus status, OrderItem... orderItems) {
         this.member = member;
         this.delivery = delivery;
         this.status = status;
@@ -66,20 +66,6 @@ public class Order {
         this.delivery = delivery;
         delivery.changeOrder(this);
     }
-
-    //==생성자 메서드==//
-
-//    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
-//        Order order = new Order();
-//        order.setMember(member);
-//        order.setDelivery(delivery);
-//        for (OrderItem orderItem : orderItems) {
-//            order.addOrderItem(orderItem);
-//        }
-//        order.orderDate = LocalDateTime.now();
-//        order.status = OrderStatus.ORDER;
-//        return order;
-//    }
 
     //==비즈니스 메서드==//
     public void cancel() {

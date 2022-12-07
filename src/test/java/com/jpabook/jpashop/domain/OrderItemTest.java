@@ -8,10 +8,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderItemTest {
 
-    private String name = "jpa book";
-    private int stockQuantity = 10;
-    private int price = 10000;
-    private int count = 9;
+    private final String name = "jpa book";
+    private final int stockQuantity = 10;
+    private final int price = 10000;
+    private final int count = 9;
 
     @Test
     void 주문상품_생성_상품재고차감() {

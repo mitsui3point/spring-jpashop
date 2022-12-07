@@ -3,7 +3,6 @@ package com.jpabook.jpashop.service;
 import com.jpabook.jpashop.domain.Member;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,13 +21,13 @@ public class MemberServiceTest {
     @Autowired
     private EntityManager em;
 
-    private Member memberA = Member.builder()
+    private final Member memberA = Member.builder()
             .name("memberA")
             .build();
-    private Member memberB = Member.builder()
+    private final Member memberB = Member.builder()
             .name("memberB")
             .build();
-    private Member memberC = Member.builder()
+    private final Member memberC = Member.builder()
             .name("memberC")
             .build();
 

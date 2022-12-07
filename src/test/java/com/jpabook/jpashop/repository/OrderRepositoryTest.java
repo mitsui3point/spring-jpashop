@@ -31,7 +31,7 @@ public class OrderRepositoryTest {
     private OrderRepository orderRepository;
     @Autowired
     private EntityManager em;
-    private Address address = Address.builder()
+    private final Address address = Address.builder()
             .city("서울")
             .street("스트릿")
             .zipcode("123-123")
@@ -42,27 +42,27 @@ public class OrderRepositoryTest {
     private final Delivery delivery = Delivery.builder()
             .address(address)
             .build();
-    private Item book1 = Book.builder()
+    private final Item book1 = Book.builder()
             .name(book1Name)
             .stockQuantity(book1StockQuantity)
             .price(book1Price)
             .build();
-    private OrderItem orderItem1 = OrderItem.builder()
+    private final OrderItem orderItem1 = OrderItem.builder()
             .item(book1)
             .orderPrice(book1Price)
             .count(book1Count)
             .build();
-    private Item book2 = Book.builder()
+    private final Item book2 = Book.builder()
             .name(book2Name)
             .stockQuantity(book2StockQuantity)
             .price(book2Price)
             .build();
-    private OrderItem orderItem2 = OrderItem.builder()
+    private final OrderItem orderItem2 = OrderItem.builder()
             .item(book2)
             .orderPrice(book2Price)
             .count(book2Count)
             .build();
-    private OrderItem[] orderItems = new OrderItem[]{orderItem1, orderItem2};
+    private final OrderItem[] orderItems = new OrderItem[]{orderItem1, orderItem2};
 
     @Test
     void 주문_데이터_저장() {

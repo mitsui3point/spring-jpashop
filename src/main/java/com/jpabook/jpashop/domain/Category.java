@@ -11,7 +11,6 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-
 public class Category {
     @Id
     @GeneratedValue

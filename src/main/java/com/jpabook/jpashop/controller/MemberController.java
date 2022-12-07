@@ -55,14 +55,11 @@ public class MemberController {
     public String members(Model model) {
         List<MemberDTO> memberDTOs = memberService.findAll()
                 .stream()
-                .map(
-                        (member) -> {
-                            return MemberDTO.builder()
-                                    .id(member.getId())
-                                    .name(member.getName())
-                                    .address(member.getAddress())
-                                    .build();
-                        }
+                .map(member -> MemberDTO.builder()
+                        .id(member.getId())
+                        .name(member.getName())
+                        .address(member.getAddress())
+                        .build()
                 )
                 .collect(Collectors.toList());
         model.addAttribute("members", memberDTOs);

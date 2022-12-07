@@ -14,14 +14,9 @@ public class ItemDTO {
     private int price;
     private int stockQuantity;
 
-    private String artist;
-    private String etc;
-
     private String author;
     private String isbn;
 
-    private String director;
-    private String actor;
 
     private BookForm bookForm;
 

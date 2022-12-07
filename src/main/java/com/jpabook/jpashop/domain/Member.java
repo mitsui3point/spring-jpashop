@@ -1,6 +1,9 @@
 package com.jpabook.jpashop.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +18,6 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-//    @Setter
     private String name;
 
     @Embedded
@@ -31,7 +33,6 @@ public class Member {
     }
 
     //==변경감지 메서드==//
-
     public void changeName(String name) {
         this.name = name;
     }

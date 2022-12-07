@@ -1,7 +1,10 @@
 package com.jpabook.jpashop.domain;
 
 import com.jpabook.jpashop.domain.enums.DeliveryStatus;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -37,7 +40,6 @@ public class Delivery {
     }
 
     //==변경감지 메서드==//
-
     public void changeDeliveryStatus(DeliveryStatus deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }

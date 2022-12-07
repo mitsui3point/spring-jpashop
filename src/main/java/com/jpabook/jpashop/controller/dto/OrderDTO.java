@@ -11,7 +11,7 @@ public class OrderDTO {
     private int count;
 
     @Builder
-    public OrderDTO(Long memberId, Long itemId, int count) {
+    private OrderDTO(Long memberId, Long itemId, int count) {
         this.memberId = memberId;
         this.itemId = itemId;
         this.count = count;

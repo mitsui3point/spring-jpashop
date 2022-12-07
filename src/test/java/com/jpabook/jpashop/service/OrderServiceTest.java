@@ -1,6 +1,8 @@
 package com.jpabook.jpashop.service;
 
-import com.jpabook.jpashop.domain.*;
+import com.jpabook.jpashop.domain.Address;
+import com.jpabook.jpashop.domain.Member;
+import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.enums.DeliveryStatus;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;

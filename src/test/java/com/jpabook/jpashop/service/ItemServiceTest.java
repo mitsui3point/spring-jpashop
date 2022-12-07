@@ -5,14 +5,12 @@ import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.domain.item.Movie;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,22 +24,22 @@ public class ItemServiceTest {
     @Autowired
     private EntityManager em;
 
-    private Item albumA = Album.builder()
+    private final Item albumA = Album.builder()
             .name("albumA")
             .build();
-    private Item albumB = Album.builder()
+    private final Item albumB = Album.builder()
             .name("albumB")
             .build();
-    private Item bookA = Book.builder()
+    private final Item bookA = Book.builder()
             .name("bookA")
             .build();
-    private Item bookB = Book.builder()
+    private final Item bookB = Book.builder()
             .name("bookB")
             .build();
-    private Item movieA = Movie.builder()
+    private final Item movieA = Movie.builder()
             .name("movieA")
             .build();
-    private Item movieB = Movie.builder()
+    private final Item movieB = Movie.builder()
             .name("movieA")
             .build();
 
