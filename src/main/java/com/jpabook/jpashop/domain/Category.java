@@ -2,7 +2,6 @@ package com.jpabook.jpashop.domain;
 
 import com.jpabook.jpashop.domain.item.Item;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+
 public class Category {
     @Id
     @GeneratedValue
@@ -26,7 +26,6 @@ public class Category {
             inverseJoinColumns = @JoinColumn(name = "item_id"))
     private List<Item> items = new ArrayList<>();
 
-    @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
@@ -37,6 +36,10 @@ public class Category {
     //==연관관계 메서드==
     public void addChildCategory(Category child) {
         this.child.add(child);
-        child.setParent(this);
+        child.changeParent(this);
+    }
+
+    public void changeParent(Category parent) {
+        this.parent = parent;
     }
 }

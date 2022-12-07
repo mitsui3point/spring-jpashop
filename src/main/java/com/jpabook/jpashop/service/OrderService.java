@@ -1,9 +1,7 @@
 package com.jpabook.jpashop.service;
 
-import com.jpabook.jpashop.domain.Delivery;
-import com.jpabook.jpashop.domain.Member;
-import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.domain.OrderItem;
+import com.jpabook.jpashop.domain.*;
+import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.repository.ItemRepository;
 import com.jpabook.jpashop.repository.MemberRepository;
@@ -22,16 +20,36 @@ public class OrderService {
 
     @Transactional
     public Long order(Long memberId, Long itemId, int count) {
+        //엔티티 조회
         Member member = memberRepository.findOne(memberId);
         Item item = itemRepository.findOne(itemId);
-        OrderItem orderItem = OrderItem.createOrderItem(item,
-                item.getPrice(),
-                count);
 
-        Delivery delivery = new Delivery();
-        delivery.setAddress(member.getAddress());
+        //배송정보 생성
+        Delivery delivery = Delivery.builder()
+                .address(
+                        member.getAddress()
+                )
+                .build();
+                //delivery.setAddress(member.getAddress());
 
-        Order order = Order.createOrder(member, delivery, orderItem);
+        //주문상품 생성
+        OrderItem orderItem = OrderItem.builder()
+                .item(item)
+                .orderPrice(item.getPrice())
+                .count(count)
+                .build();
+                //OrderItem.createOrderItem(item, item.getPrice(), count);
+
+        //주문 생성
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .status(OrderStatus.ORDER)
+                .orderItems(new OrderItem[]{orderItem})
+                .build();
+                //Order.createOrder(member, delivery, orderItem);
+
+        //주문 저장
         orderRepository.save(order);
 
         return order.getId();

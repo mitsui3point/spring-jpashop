@@ -9,10 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,21 +22,15 @@ public class MemberRepositoryTest {
     @Autowired
     private EntityManager em;
 
-    private Member memberA;
-    private Member memberB;
-    private Member memberC;
-
-    @BeforeEach
-    void setUp() {
-        memberA = new Member();
-        memberA.setName("memberA");
-
-        memberB = new Member();
-        memberB.setName("memberB");
-
-        memberC = new Member();
-        memberC.setName("memberC");
-    }
+    private Member memberA = Member.builder()
+            .name("memberA")
+            .build();
+    private Member memberB = Member.builder()
+            .name("memberB")
+            .build();
+    private Member memberC = Member.builder()
+            .name("memberC")
+            .build();
 
     @Test
     void 회원_데이터_등록_조회() {

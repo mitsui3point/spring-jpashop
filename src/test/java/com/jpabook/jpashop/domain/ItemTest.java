@@ -18,7 +18,7 @@ public class ItemTest {
     @Test
     void 상품_재고_add() {
         //given
-        Item item = new Album();
+        Item item = Album.builder().build();
         item.addStockQuantity(addStockQuantity);
         int expected = addStockQuantity;
         //when
@@ -30,7 +30,7 @@ public class ItemTest {
     @Test
     void 상품_재고_subtract() {
         //given
-        Item item = new Album();
+        Item item = Album.builder().build();
         item.addStockQuantity(addStockQuantity);
         int expected = addStockQuantity - subtractStockQuantity;
         //when
@@ -43,7 +43,7 @@ public class ItemTest {
     @Test
     void 상품_현재고_마이너스_예외() {
         //given
-        Item item = new Album();
+        Item item = Album.builder().build();
         item.addStockQuantity(addStockQuantity);
         //then
         Throwable actual = Assertions.assertThrows(NotEnoughItemStockException.class, () -> {

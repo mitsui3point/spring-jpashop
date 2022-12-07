@@ -1,11 +1,12 @@
 package com.jpabook.jpashop.service;
 
 import com.jpabook.jpashop.domain.*;
+import com.jpabook.jpashop.domain.enums.DeliveryStatus;
+import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,9 +36,12 @@ public class OrderServiceTest {
         int expectedStockQuantity = stockQuantity - count;
 
         Long memberId = persistMember("memberA",
-                new Address("서울",
-                        "스트릿",
-                        "123-123"));
+                Address.builder()
+                        .city("서울")
+                        .street("스트릿")
+                        .zipcode("123-123")
+                        .build()
+        );
         Long itemId = persistBookItem("jpa book1",
                 stockQuantity,
                 10000);
@@ -49,8 +53,13 @@ public class OrderServiceTest {
 
         Order actual = orderService.findOne(orderId);
         Member actualMember = actual.getMember();
-        Item actualItem = actual.getOrderItems().get(0).getItem();
-        int actualStockQuantity = actual.getOrderItems().get(0).getItem().getStockQuantity();
+        Item actualItem = actual.getOrderItems()
+                .get(0)
+                .getItem();
+        int actualStockQuantity = actual.getOrderItems()
+                .get(0)
+                .getItem()
+                .getStockQuantity();
         OrderStatus actualStatus = actual.getStatus();
 
         //then
@@ -66,12 +75,16 @@ public class OrderServiceTest {
         int outOfRangeCount = 11;
         int stockQuantity = 10;
         Long memberId = persistMember("memberA",
-                new Address("서울",
-                        "스트릿",
-                        "123-123"));
+                Address.builder()
+                        .city("서울")
+                        .street("스트릿")
+                        .zipcode("123-123")
+                        .build()
+        );
         Long itemId = persistBookItem("jpa book1",
                 stockQuantity,
-                10000);
+                10000
+        );
 
         //then
         assertThatExceptionOfType(NotEnoughItemStockException.class)
@@ -88,13 +101,20 @@ public class OrderServiceTest {
         int expected = 10;
         OrderStatus expectedStatus = OrderStatus.CANCEL;
         Long memberId = persistMember("memberA",
-                new Address("서울",
-                        "스트릿",
-                        "123-123"));
+                Address.builder()
+                        .city("서울")
+                        .street("스트릿")
+                        .zipcode("123-123")
+                        .build()
+        );
         Long itemId = persistBookItem("jpa book1",
                 expected,
-                10000);
-        Long orderId = orderService.order(memberId, itemId, count);
+                10000
+        );
+        Long orderId = orderService.order(memberId,
+                itemId,
+                count
+        );
 
         //when
         orderService.cancel(orderId);
@@ -116,13 +136,25 @@ public class OrderServiceTest {
         int count = 5;
         int expected = 10;
         Long memberId = persistMember("memberA",
-                new Address("서울", "스트릿", "123-123"));
-        Long itemId = persistBookItem("jpa book1", expected, 10000);
-        Long orderId = orderService.order(memberId, itemId, count);
+                Address.builder()
+                        .city("서울")
+                        .street("스트릿")
+                        .zipcode("123-123")
+                        .build()
+        );
+        Long itemId = persistBookItem("jpa book1",
+                expected,
+                10000
+        );
+        Long orderId = orderService.order(
+                memberId,
+                itemId,
+                count
+        );
 
         orderService.findOne(orderId)
                 .getDelivery()
-                .setDeliveryStatus(DeliveryStatus.COMP);
+                .changeDeliveryStatus(DeliveryStatus.COMP);
 
         //then
         assertThatExceptionOfType(IllegalStateException.class)
@@ -138,9 +170,10 @@ public class OrderServiceTest {
     }
 
     private Long persistMember(String name, Address address) {
-        Member member = new Member();
-        member.setAddress(address);
-        member.setName(name);
+        Member member = Member.builder()
+                .name(name)
+                .address(address)
+                .build();
 
         em.persist(member);
 
@@ -148,10 +181,11 @@ public class OrderServiceTest {
     }
 
     private Long persistBookItem(String name, int stockQuantity, int price) {
-        Item book = new Book();
-        book.setName(name);
-        book.setStockQuantity(stockQuantity);
-        book.setPrice(price);
+        Item book = Book.builder()
+                .name(name)
+                .stockQuantity(stockQuantity)
+                .price(price)
+                .build();
 
         em.persist(book);
 

@@ -1,11 +1,13 @@
 package com.jpabook.jpashop.controller.dto;
 
 import com.jpabook.jpashop.controller.form.BookForm;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemDTO {
     private Long id;
     private String name;
@@ -23,7 +25,8 @@ public class ItemDTO {
 
     private BookForm bookForm;
 
-    public ItemDTO(BookForm bookForm) {
+    @Builder
+    private ItemDTO(BookForm bookForm) {
         this.bookForm = bookForm;
         this.id = this.bookForm.getId();
         this.name = this.bookForm.getName();
@@ -34,6 +37,8 @@ public class ItemDTO {
     }
 
     public static ItemDTO getBookDTO(BookForm bookForm) {
-        return new ItemDTO(bookForm);
+        return ItemDTO.builder()
+                .bookForm(bookForm)
+                .build();
     }
 }

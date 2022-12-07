@@ -1,7 +1,5 @@
 package com.jpabook.jpashop.repository;
 
-import com.jpabook.jpashop.controller.dto.ItemDTO;
-import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -40,9 +38,9 @@ public class ItemRepository {
 
     private void updateItem(Item item) {
         Item itemEntity = findOne(item.getId());
-        itemEntity.setName(item.getName());
-        itemEntity.setPrice(item.getPrice());
-        itemEntity.setStockQuantity(item.getStockQuantity());
-        itemEntity.setCategories(item.getCategories());
+        itemEntity.changeName(item.getName());
+        itemEntity.changePrice(item.getPrice());
+        itemEntity.changeStockQuantity(item.getStockQuantity());
+        itemEntity.changeCategories(item.getCategories());
     }
 }

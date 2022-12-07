@@ -22,21 +22,15 @@ public class MemberServiceTest {
     @Autowired
     private EntityManager em;
 
-    private Member memberA;
-    private Member memberB;
-    private Member memberC;
-
-    @BeforeEach
-    void setUp() {
-        memberA = new Member();
-        memberA.setName("memberA");
-
-        memberB = new Member();
-        memberB.setName("memberB");
-
-        memberC = new Member();
-        memberC.setName("memberC");
-    }
+    private Member memberA = Member.builder()
+            .name("memberA")
+            .build();
+    private Member memberB = Member.builder()
+            .name("memberB")
+            .build();
+    private Member memberC = Member.builder()
+            .name("memberC")
+            .build();
 
     @Test
     void 회원가입() {
@@ -52,8 +46,8 @@ public class MemberServiceTest {
     @Test()
     void 중복회원가입() {
         //given
-        Member duplicateNameMemberA = new Member();
-        duplicateNameMemberA.setName("memberA");
+        Member duplicateNameMemberA = Member.builder().name("memberA").build();
+        duplicateNameMemberA.changeName("memberA");
         //when
         memberService.join(memberA);
         try {

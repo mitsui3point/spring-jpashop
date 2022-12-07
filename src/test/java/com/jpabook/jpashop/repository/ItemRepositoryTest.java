@@ -26,22 +26,24 @@ public class ItemRepositoryTest {
     @PersistenceContext
     private EntityManager em;
 
-    private Item albumA = new Album();
-    private Item albumB = new Album();
-    private Item bookA = new Book();
-    private Item bookB = new Book();
-    private Item movieA = new Movie();
-    private Item movieB = new Movie();
-
-    @BeforeEach
-    void setUp() {
-        albumA.setName("albumA");
-        albumB.setName("albumB");
-        bookA.setName("bookA");
-        bookB.setName("bookB");
-        movieA.setName("movieA");
-        movieB.setName("movieB");
-    }
+    private Item albumA = Album.builder()
+            .name("albumA")
+            .build();
+    private Item albumB = Album.builder()
+            .name("albumB")
+            .build();
+    private Item bookA = Book.builder()
+            .name("bookA")
+            .build();
+    private Item bookB = Book.builder()
+            .name("bookB")
+            .build();
+    private Item movieA = Movie.builder()
+            .name("movieA")
+            .build();
+    private Item movieB = Movie.builder()
+            .name("movieA")
+            .build();
 
     @Test
     void 상품_데이터_등록() {
@@ -60,7 +62,7 @@ public class ItemRepositoryTest {
         String expected = "bookA";
         //when
         itemRepository.saveMerge(movieA);
-        movieA.setName(expected);
+        movieA.changeName(expected);
         itemRepository.saveMerge(movieA);
         Item actual = itemRepository.findOne(movieA.getId());
         //then

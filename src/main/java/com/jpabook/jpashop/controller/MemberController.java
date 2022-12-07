@@ -35,11 +35,16 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        Member member = new Member();
-        member.setName(form.getName());
-        member.setAddress(new Address(form.getCity(),
-                form.getStreet(),
-                form.getZipcode()));
+        Member member = Member.builder()
+                .name(form.getName())
+                .address(
+                        Address.builder()
+                                .city(form.getCity())
+                                .street(form.getStreet())
+                                .zipcode(form.getZipcode())
+                                .build()
+                )
+                .build();
 
         memberService.join(member);
 
@@ -48,14 +53,18 @@ public class MemberController {
 
     @GetMapping("/members")
     public String members(Model model) {
-        List<MemberDTO> memberDTOs = memberService.findAll().stream()
-                .map(member -> {
-                    return MemberDTO.builder()
-                            .id(member.getId())
-                            .name(member.getName())
-                            .address(member.getAddress())
-                            .build();
-                }).collect(Collectors.toList());
+        List<MemberDTO> memberDTOs = memberService.findAll()
+                .stream()
+                .map(
+                        (member) -> {
+                            return MemberDTO.builder()
+                                    .id(member.getId())
+                                    .name(member.getName())
+                                    .address(member.getAddress())
+                                    .build();
+                        }
+                )
+                .collect(Collectors.toList());
         model.addAttribute("members", memberDTOs);
         return "members/memberList";
     }

@@ -9,29 +9,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class PersistentBagTest {
-	@Autowired
-	EntityManager entityManager;
+    @Autowired
+    EntityManager entityManager;
 
-	@Test
-	@Transactional
-	void memberPersistentBagTest() {
-		//given
-		Member member = new Member();
-		member.setName("memberA");
-		System.out.println("member = " + member.getOrders().getClass());
-		//when
-		entityManager.persist(member);
-		List<Order> actual = member.getOrders();
-		Class<PersistentBag> expected = PersistentBag.class;
-		//then
-		System.out.println("member = " + member.getOrders().getClass());
-		assertThat(actual).isInstanceOf(expected);
-	}
+    @Test
+    @Transactional
+    void memberPersistentBagTest() {
+        //given
+        Member member = Member.builder()
+                .name("memberA")
+                .build();
+        System.out.println("member = " +
+                member.getOrders()
+                        .getClass()
+        );
+
+        //when
+        entityManager.persist(member);
+        List<Order> actual = member.getOrders();
+        Class<PersistentBag> expected = PersistentBag.class;
+
+        //then
+        System.out.println("member = " +
+                member.getOrders()
+                        .getClass()
+        );
+        assertThat(actual).isInstanceOf(expected);
+    }
 }

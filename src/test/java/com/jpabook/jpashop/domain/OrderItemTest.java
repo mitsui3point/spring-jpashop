@@ -16,11 +16,15 @@ public class OrderItemTest {
     @Test
     void 주문상품_생성_상품재고차감() {
         //given
-        Item book = getBookTestData(name, stockQuantity, price);
+        Item book = Book.builder()
+                .name(name)
+                .stockQuantity(stockQuantity)
+                .price(price)
+                .build();
         int expected = stockQuantity - count;
 
         //when
-        OrderItem orderItem = OrderItem.createOrderItem(book, price, count);
+        OrderItem orderItem = OrderItem.builder().item(book).orderPrice(price).count(count).build();
         int actual = orderItem.getItem().getStockQuantity();
 
         //then
@@ -30,9 +34,17 @@ public class OrderItemTest {
     @Test
     void 주문상품_취소_상품재고복원() {
         //given
-        Item book = getBookTestData(name, stockQuantity, price);
+        Item book = Book.builder()
+                .name(name)
+                .stockQuantity(stockQuantity)
+                .price(price)
+                .build();
         int expected = stockQuantity;
-        OrderItem orderItem = OrderItem.createOrderItem(book, price, count);
+        OrderItem orderItem = OrderItem.builder()
+                .item(book)
+                .orderPrice(price)
+                .count(count)
+                .build();
 
         //when
         orderItem.cancel();
@@ -42,11 +54,4 @@ public class OrderItemTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Item getBookTestData(String name, int stockQuantity, int price) {
-        Item book = new Book();
-        book.setName(name);
-        book.setStockQuantity(stockQuantity);
-        book.setPrice(price);
-        return book;
-    }
 }

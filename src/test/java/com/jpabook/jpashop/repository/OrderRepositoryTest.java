@@ -1,17 +1,16 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.domain.*;
+import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,10 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 public class OrderRepositoryTest {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private EntityManager em;
     private final String book1Name = "jpa book";
     private final int book1StockQuantity = 10;
     private final int book1Price = 10000;
@@ -32,32 +27,51 @@ public class OrderRepositoryTest {
     private final int book2StockQuantity = 299;
     private final int book2Price = 10000;
     private final int book2Count = 290;
-
-    private final Address address = new Address("서울", "스트릿", "123-123");
-    private final Member member = new Member();
-    private final Delivery delivery = new Delivery();
-    private Item book1;
-    private Item book2;
-    private OrderItem orderItem1;
-    private OrderItem orderItem2;
-    private OrderItem[] orderItems;
-
-    @BeforeEach
-    void setUp() {
-        member.setAddress(address);
-        delivery.setAddress(address);
-
-        book1 = getBookTestData(book1Name, book1StockQuantity, book1Price);
-        book2 = getBookTestData(book2Name, book2StockQuantity, book2Price);
-        orderItem1 = OrderItem.createOrderItem(book1, book1Price, book1Count);
-        orderItem2 = OrderItem.createOrderItem(book2, book2Price, book2Count);
-        orderItems = new OrderItem[]{orderItem1, orderItem2};
-    }
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private EntityManager em;
+    private Address address = Address.builder()
+            .city("서울")
+            .street("스트릿")
+            .zipcode("123-123")
+            .build();
+    private final Member member = Member.builder()
+            .address(address)
+            .build();
+    private final Delivery delivery = Delivery.builder()
+            .address(address)
+            .build();
+    private Item book1 = Book.builder()
+            .name(book1Name)
+            .stockQuantity(book1StockQuantity)
+            .price(book1Price)
+            .build();
+    private OrderItem orderItem1 = OrderItem.builder()
+            .item(book1)
+            .orderPrice(book1Price)
+            .count(book1Count)
+            .build();
+    private Item book2 = Book.builder()
+            .name(book2Name)
+            .stockQuantity(book2StockQuantity)
+            .price(book2Price)
+            .build();
+    private OrderItem orderItem2 = OrderItem.builder()
+            .item(book2)
+            .orderPrice(book2Price)
+            .count(book2Count)
+            .build();
+    private OrderItem[] orderItems = new OrderItem[]{orderItem1, orderItem2};
 
     @Test
     void 주문_데이터_저장() {
         //given
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();
         em.persist(member);
         em.persist(book1);
         em.persist(book2);
@@ -73,7 +87,11 @@ public class OrderRepositoryTest {
     @Test
     void 주문_데이터_취소() {
         //given
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();//member, delivery, orderItems
         em.persist(member);
         em.persist(book1);
         em.persist(book2);
@@ -82,7 +100,10 @@ public class OrderRepositoryTest {
 
         //when
         order.cancel();
-        OrderStatus actual = orderRepository.findById(order.getId()).getStatus();
+        OrderStatus actual = orderRepository.findById(
+                order.getId()
+        )
+                .getStatus();
 
         //then
         assertThat(actual).isEqualTo(expected);
@@ -91,23 +112,57 @@ public class OrderRepositoryTest {
     @Test
     void 주문_전체_조회() {
         //given
-        Member member2 = new Member();
-        member2.setName("mem2");
-        Delivery delivery2 = new Delivery();
-        Item book3 = getBookTestData("jpa book3", 50, 10000);
-        Item book4 = getBookTestData("jpa book4", 60, 10500);
+        Member member2 = Member.builder()
+                .name("mem2")
+                .address(address)
+                .build();
+        member2.changeName("mem2");
+        Address address2 = Address.builder()
+                .city("서울")
+                .street("스트릿")
+                .zipcode("123-123")
+                .build();
+        Delivery delivery2 = Delivery.builder()
+                .address(address2)
+                .build();
+        Item book3 = Book.builder()
+                .name("jpa book3")
+                .stockQuantity(50)
+                .price(10000)
+                .build();//getBookTestData("jpa book3", 50, 10000);
+        Item book4 = Book.builder()
+                .name("jpa book4")
+                .stockQuantity(60)
+                .price(10500)
+                .build();//getBookTestData("jpa book4", 60, 10500);
         OrderItem[] orderItems = {
-                OrderItem.createOrderItem(book3, 12000, 40),
-                OrderItem.createOrderItem(book4, 13000, 50)
+                OrderItem.builder()
+                        .item(book3)
+                        .orderPrice(12000)
+                        .count(40)
+                        .build(),//(book3, 12000, 40),
+                OrderItem.builder()
+                        .item(book4)
+                        .orderPrice(13000)
+                        .count(50)
+                        .build()//(book4, 13000, 50)
         };
 
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();
         em.persist(member);
         em.persist(book1);
         em.persist(book2);
         orderRepository.save(order);
 
-        Order order2 = Order.createOrder(member2, delivery2, orderItems);
+        Order order2 = Order.builder()
+                .member(member2)
+                .delivery(delivery2)
+                .orderItems(orderItems)
+                .build();
         em.persist(member2);
         em.persist(book3);
         em.persist(book4);
@@ -127,23 +182,57 @@ public class OrderRepositoryTest {
     @Test
     void 주문_전체_조회_criteria() {
         //given
-        Member member2 = new Member();
-        member2.setName("mem2");
-        Delivery delivery2 = new Delivery();
-        Item book3 = getBookTestData("jpa book3", 50, 10000);
-        Item book4 = getBookTestData("jpa book4", 60, 10500);
+        Member member2 = Member.builder()
+                .name("mem2")
+                .address(address)
+                .build();
+        member2.changeName("mem2");
+        Address address2 = Address.builder()
+                .city("서울")
+                .street("스트릿")
+                .zipcode("123-123")
+                .build();
+        Delivery delivery2 = Delivery.builder()
+                .address(address2)
+                .build();
+        Item book3 = Book.builder()
+                .name("jpa book3")
+                .stockQuantity(50)
+                .price(10000)
+                .build();//getBookTestData("jpa book3", 50, 10000);
+        Item book4 = Book.builder()
+                .name("jpa book4")
+                .stockQuantity(60)
+                .price(10500)
+                .build();//getBookTestData("jpa book4", 60, 10500);
         OrderItem[] orderItems = {
-                OrderItem.createOrderItem(book3, 12000, 40),
-                OrderItem.createOrderItem(book4, 13000, 50)
+                OrderItem.builder()
+                        .item(book3)
+                        .orderPrice(12000)
+                        .count(40)
+                        .build(),//(book3, 12000, 40),
+                OrderItem.builder()
+                        .item(book4)
+                        .orderPrice(13000)
+                        .count(50)
+                        .build()//(book4, 13000, 50)
         };
 
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();
         em.persist(member);
         em.persist(book1);
         em.persist(book2);
         orderRepository.save(order);
 
-        Order order2 = Order.createOrder(member2, delivery2, orderItems);
+        Order order2 = Order.builder()
+                .member(member2)
+                .delivery(delivery2)
+                .orderItems(orderItems)
+                .build();
         em.persist(member2);
         em.persist(book3);
         em.persist(book4);
@@ -163,13 +252,5 @@ public class OrderRepositoryTest {
     @AfterEach
     void tearDown() {
         em.flush();
-    }
-
-    private Item getBookTestData(String name, int stockQuantity, int price) {
-        Item book = new Book();
-        book.setName(name);
-        book.setStockQuantity(stockQuantity);
-        book.setPrice(price);
-        return book;
     }
 }

@@ -39,14 +39,16 @@ public class OrderController {
     @PostMapping("/order")
     public String createOrder(@ModelAttribute OrderDTO orderDTO) {
         try {
-            orderService.order(orderDTO.getMemberId(),
+            orderService.order(
+                    orderDTO.getMemberId(),
                     orderDTO.getItemId(),
-                    orderDTO.getCount());
+                    orderDTO.getCount()
+            );
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/order";
         }
-        return "redirect:/";
+        return "redirect:/orders";
     }
 
     @GetMapping("/orders")

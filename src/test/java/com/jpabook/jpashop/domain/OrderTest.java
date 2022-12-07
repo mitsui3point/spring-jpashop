@@ -1,8 +1,9 @@
 package com.jpabook.jpashop.domain;
 
+import com.jpabook.jpashop.domain.enums.DeliveryStatus;
+import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
-import net.minidev.json.JSONValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,27 +23,39 @@ public class OrderTest {
     private int book2Price = 10000;
     private int book2Count = 290;
 
-    private Address address = new Address("서울", "스트릿", "123-123");
-    private Member member = new Member();
-    private Delivery delivery = new Delivery();
+    private Address address = Address.builder()
+            .city("서울")
+            .street("스트릿")
+            .zipcode("123-123")
+            .build();
+    private Member member = Member.builder()
+            .address(address)
+            .build();
+    private Delivery delivery = Delivery.builder()
+            .address(address)
+            .build();
     private OrderStatus orderStatus = OrderStatus.ORDER;
-    private Item book1;
-    private Item book2;
-    private OrderItem orderItem1;
-    private OrderItem orderItem2;
-    private OrderItem[] orderItems;
-
-    @BeforeEach
-    void setUp() {
-        member.setAddress(address);
-        delivery.setAddress(address);
-
-        book1 = getBookTestData(book1Name, book1StockQuantity, book1Price);
-        book2 = getBookTestData(book2Name, book2StockQuantity, book2Price);
-        orderItem1 = OrderItem.createOrderItem(book1, book1Price, book1Count);
-        orderItem2 = OrderItem.createOrderItem(book2, book2Price, book2Count);
-        orderItems = new OrderItem[]{orderItem1, orderItem2};
-    }
+    private Item book1 = Book.builder()
+            .name(book1Name)
+            .stockQuantity(book1StockQuantity)
+            .price(book1Price)
+            .build();
+    private Item book2 = Book.builder()
+            .name(book2Name)
+            .stockQuantity(book2StockQuantity)
+            .price(book2Price)
+            .build();
+    private OrderItem orderItem1 = OrderItem.builder()
+            .item(book1)
+            .orderPrice(book1Price)
+            .count(book1Count)
+            .build();
+    private OrderItem orderItem2 = OrderItem.builder()
+            .item(book2)
+            .orderPrice(book2Price)
+            .count(book2Count)
+            .build();
+    private OrderItem[] orderItems = new OrderItem[]{orderItem1, orderItem2};
 
     @Test
     void 주문_생성_상품재고차감() {
@@ -51,7 +64,12 @@ public class OrderTest {
         int expectedStockQuantitySum = book1StockQuantity + book2StockQuantity - expectedCountSum;
 
         //when
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .status(orderStatus)
+                .build();
         Member actualMember = order.getMember();
         Delivery actualDelivery = order.getDelivery();
         List<OrderItem> actualOrderItems = order.getOrderItems();
@@ -79,7 +97,11 @@ public class OrderTest {
     @Test
     void 주문_취소_상품재고복원() {
         //given
-        Order order = Order.createOrder(member, delivery, orderItems);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();
         int countSum = Arrays.stream(orderItems)
                 .mapToInt(orderItem -> orderItem.getCount())
                 .sum();
@@ -96,7 +118,11 @@ public class OrderTest {
         //when
         order.cancel();
         int actual = Arrays.stream(orderItems)
-                .mapToInt(orderItem -> orderItem.getItem().getStockQuantity())
+                .mapToInt(
+                        orderItem -> orderItem
+                                .getItem()
+                                .getStockQuantity()
+                )
                 .sum();
         OrderStatus actualOrderStatus = order.getStatus();
         System.out.println("actual = " + actual);
@@ -110,21 +136,17 @@ public class OrderTest {
     @Test
     void 주문_취소_배송완료_예외() {
         //given
-        delivery.setDeliveryStatus(DeliveryStatus.COMP);
-        Order order = Order.createOrder(member, delivery, orderItems);
+        delivery.changeDeliveryStatus(DeliveryStatus.COMP);
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .orderItems(orderItems)
+                .build();
         //then
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> {
                     //when
                     order.cancel();
                 }).withMessageContaining("배송이 완료된 상품은 주문취소가 불가능합니다.");
-    }
-
-    private Item getBookTestData(String name, int stockQuantity, int price) {
-        Item book = new Book();
-        book.setName(name);
-        book.setStockQuantity(stockQuantity);
-        book.setPrice(price);
-        return book;
     }
 }

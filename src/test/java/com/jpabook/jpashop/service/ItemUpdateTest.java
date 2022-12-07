@@ -24,9 +24,10 @@ public class ItemUpdateTest {
     @Test
     void itemUpdateUsingMergeTest() {
         //given
-        Book item1 = new Book();
-        item1.setName("item");
-        item1.setAuthor("author1");
+        Book item1 = Book.builder()
+                .name("item")
+                .author("author1")
+                .build();
         //when
         Book actualInsert = (Book) itemService.findOne(itemService.saveItemMerge(item1));
         em.flush();
@@ -37,9 +38,11 @@ public class ItemUpdateTest {
                 .isEqualTo("author1");
 
         //given
-        Book item2 = new Book();
-        item2.setId(item1.getId());
-        item2.setName("item2");
+        Book item2 = Book.builder()
+                .name("item2")
+                .build();
+        item2.changeId(item1.getId());
+        item2.changeName("item2");
         //when
         Book actualUpdate = (Book) itemService.findOne(itemService.saveItemMerge(item2));
         em.flush();

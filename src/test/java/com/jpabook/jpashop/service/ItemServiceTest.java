@@ -26,22 +26,24 @@ public class ItemServiceTest {
     @Autowired
     private EntityManager em;
 
-    private Item albumA = new Album();
-    private Item albumB = new Album();
-    private Item bookA = new Book();
-    private Item bookB = new Book();
-    private Item movieA = new Movie();
-    private Item movieB = new Movie();
-
-    @BeforeEach
-    void setUp() {
-        albumA.setName("albumA");
-        albumB.setName("albumB");
-        bookA.setName("bookA");
-        bookB.setName("bookB");
-        movieA.setName("movieA");
-        movieB.setName("movieB");
-    }
+    private Item albumA = Album.builder()
+            .name("albumA")
+            .build();
+    private Item albumB = Album.builder()
+            .name("albumB")
+            .build();
+    private Item bookA = Book.builder()
+            .name("bookA")
+            .build();
+    private Item bookB = Book.builder()
+            .name("bookB")
+            .build();
+    private Item movieA = Movie.builder()
+            .name("movieA")
+            .build();
+    private Item movieB = Movie.builder()
+            .name("movieA")
+            .build();
 
     @Test
     public void 상품저장() {
@@ -60,7 +62,7 @@ public class ItemServiceTest {
         String expected = "changeItemName";
         //when
         itemService.saveItemMerge(albumA);
-        albumA.setName(expected);
+        albumA.changeName(expected);
         Long mergeItemId = itemService.saveItemMerge(albumA);
         Item actual = itemService.findOne(mergeItemId);
         //then

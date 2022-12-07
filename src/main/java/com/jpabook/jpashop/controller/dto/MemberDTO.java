@@ -1,15 +1,20 @@
 package com.jpabook.jpashop.controller.dto;
 
 import com.jpabook.jpashop.domain.Address;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberDTO {
     private Long id;
     private String name;
     private Address address;
+
+    @Builder
+    public MemberDTO(Long id, String name, Address address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
 }
