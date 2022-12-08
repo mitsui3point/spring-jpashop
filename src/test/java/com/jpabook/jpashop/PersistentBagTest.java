@@ -25,10 +25,7 @@ class PersistentBagTest {
         Member member = Member.builder()
                 .name("memberA")
                 .build();
-        System.out.println("member = " +
-                member.getOrders()
-                        .getClass()
-        );
+        System.out.println("prev persist member = " + member.getOrders().getClass());
 
         //when
         entityManager.persist(member);
@@ -36,10 +33,7 @@ class PersistentBagTest {
         Class<PersistentBag> expected = PersistentBag.class;
 
         //then
-        System.out.println("member = " +
-                member.getOrders()
-                        .getClass()
-        );
+        System.out.println("post persist member = " + member.getOrders().getClass());
         assertThat(actual).isInstanceOf(expected);
     }
 }
