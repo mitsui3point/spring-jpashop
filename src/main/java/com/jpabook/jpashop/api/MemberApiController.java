@@ -2,14 +2,16 @@ package com.jpabook.jpashop.api;
 
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
-import lombok.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+
+import static lombok.AccessLevel.PROTECTED;
 
 /**
  * MemberApiController
@@ -56,11 +58,25 @@ public class MemberApiController {
                 .build();
     }
 
+    @PatchMapping("/v2/members/{id}")//부분수정 Patch, 전체수정 Put
+    public UpdateMemberResponse updateMemberV2(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateMemberRequest request) {
+
+        memberService.updateName(id, request.getName());
+        Member member = memberService.findOne(id);
+
+        return UpdateMemberResponse.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .build();
+    }
+
     /**
      * API parameter DTO(parameter)
      */
     @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = PROTECTED)
     private static class CreateMemberResponse {
         private Long id;
 
@@ -75,13 +91,38 @@ public class MemberApiController {
      * API parameter DTO(return)
      */
     @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = PROTECTED)
     private static class CreateMemberRequest {
         @NotEmpty
         private String name;
 
         @Builder
         private CreateMemberRequest(String name) {
+            this.name = name;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    private static class UpdateMemberRequest {
+        @NotEmpty
+        private String name;
+
+        @Builder
+        private UpdateMemberRequest(String name) {
+            this.name = name;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    private static class UpdateMemberResponse {
+        private Long id;
+        private String name;
+
+        @Builder
+        private UpdateMemberResponse(Long id, String name) {
+            this.id = id;
             this.name = name;
         }
     }

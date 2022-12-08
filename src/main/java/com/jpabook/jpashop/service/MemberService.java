@@ -1,7 +1,6 @@
 package com.jpabook.jpashop.service;
 
 import com.jpabook.jpashop.domain.Member;
-import com.jpabook.jpashop.domain.constants.ExceptionMessage;
 import com.jpabook.jpashop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.jpabook.jpashop.domain.constants.ExceptionMessage.*;
+import static com.jpabook.jpashop.domain.constants.ExceptionMessage.ALREADY_EXISTS_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +48,10 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
+    /**
+     * 회원 이름 수정
+     */
+    @Transactional
     public void updateName(Long id, String updateName) {
         Member member = memberRepository.findOne(id);
         member.changeName(updateName);
