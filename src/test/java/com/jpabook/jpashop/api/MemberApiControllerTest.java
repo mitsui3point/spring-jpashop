@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.repository.MemberRepository;
-import com.jpabook.jpashop.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,49 +27,68 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)//각 메서드마다 applicationContext 가 새로 생성되어 테스트 실행 속도가 매우 느리다.
 public class MemberApiControllerTest {
 
-    private static final String BASE_URL = "/api/v1";
-    private static final String MEMBER_JOIN_URL = BASE_URL + "/members";
+    private static final String BASE_URL = "/api";
+    private static final String MEMBER_JOIN_V1_URL = BASE_URL + "/v1/members";
+    private static final String MEMBER_JOIN_V2_URL = BASE_URL + "/v2/members";
     @Autowired
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-
-    @Autowired
-    private MemberService memberService;
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private EntityManager em;
 
+    private Address address = Address.builder()
+            .city("city")
+            .street("street")
+            .zipcode("zipcode")
+            .build();
+    private Member member = Member.builder()
+            .name("member1")
+            .address(address)
+            .build();
+    private Member noNameMember = Member.builder()
+            .address(address)
+            .build();
 
-    @BeforeEach
-    void setUp() {
+    @Test
+    void 회원_가입_V1() throws Exception {
+        memberJoin(MEMBER_JOIN_V1_URL);
+    }
+    @Test
+    void 회원_가입_V2() throws Exception {
+        memberJoin(MEMBER_JOIN_V2_URL);
     }
 
     @Test
-    @Transactional
-    void 회원_가입() throws Exception {
-        //given
-        Address address = Address.builder()
-                .city("city")
-                .street("street")
-                .zipcode("zipcode")
-                .build();
-        Member member = Member.builder()
-                .name("member1")
-                .address(address)
-                .build();
+    void 회원_가입_이름_중복_V1() throws JsonProcessingException {
+        memberJoinDuplicateName(MEMBER_JOIN_V1_URL);
+    }
 
+    @Test
+    void 회원_가입_이름_중복_V2() throws JsonProcessingException {
+        memberJoinDuplicateName(MEMBER_JOIN_V2_URL);
+    }
+
+    @Test
+    void 회원_가입_이름_누락_V1() throws Exception {
+        memberJoinNoName(MEMBER_JOIN_V1_URL);
+    }
+
+    @Test
+    void 회원_가입_이름_누락_V2() throws Exception {
+        memberJoinNoName(MEMBER_JOIN_V2_URL);
+    }
+
+    private void memberJoin(String url) throws Exception {
         //when
         String body = mapper.writeValueAsString(member);
-        ResultActions perform = mvc.perform(
-                post(MEMBER_JOIN_URL)
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON)
+        ResultActions perform = mvc.perform(post(url)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then
@@ -81,52 +98,26 @@ public class MemberApiControllerTest {
                 .andExpect(content().json(expectJson));
     }
 
-    @Test
-    @Transactional
-    void 회원_가입_이름_중복() throws JsonProcessingException {
-        //given
-        Address address = Address.builder()
-                .city("city")
-                .street("street")
-                .zipcode("zipcode")
-                .build();
-        Member member = Member.builder()
-                .name("member1")
-                .address(address)
-                .build();
-
+    private void memberJoinDuplicateName(String url) throws JsonProcessingException {
         //when
         String duplicateNameBody = mapper.writeValueAsString(member);
         memberRepository.save(member);
+
         //then
         Assertions.assertThatThrownBy(() -> {
-            mvc.perform(
-                    post(MEMBER_JOIN_URL)
-                            .content(duplicateNameBody)
-                            .contentType(MediaType.APPLICATION_JSON)
+            mvc.perform(post(url)
+                    .content(duplicateNameBody)
+                    .contentType(MediaType.APPLICATION_JSON)
             );
         }).hasCause(new IllegalStateException(ALREADY_EXISTS_NAME.getMessage()));
     }
 
-    @Test
-    @Transactional
-    void 회원_가입_이름_누락() throws Exception {
-        //given
-        Address address = Address.builder()
-                .city("city")
-                .street("street")
-                .zipcode("zipcode")
-                .build();
-        Member noNameMember = Member.builder()
-                .address(address)
-                .build();
-
+    private void memberJoinNoName(String url) throws Exception {
         //when
         String noNameBody = mapper.writeValueAsString(noNameMember);
-        ResultActions performNoName = mvc.perform(
-                post(MEMBER_JOIN_URL)
-                        .content(noNameBody)
-                        .contentType(MediaType.APPLICATION_JSON)
+        ResultActions performNoName = mvc.perform(post(url)
+                .content(noNameBody)
+                .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then

@@ -3,18 +3,22 @@ package com.jpabook.jpashop.api;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
 import lombok.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * MemberApiController
- *  <p>
+ * <p>
  * {@code @RestController: @Controller + @ResponseBody}
- *  </p>
+ * </p>
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class MemberApiController {
 
@@ -30,7 +34,7 @@ public class MemberApiController {
      * 결론<br />
      * - API 요청 스펙에 맞추어 별도의 DTO를 파라미터로 받는다.<br />
      */
-    @PostMapping("/members")
+    @PostMapping("/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
         Long id = memberService.join(member);
         return CreateMemberResponse.builder()
@@ -38,6 +42,23 @@ public class MemberApiController {
                 .build();
     }
 
+    /**
+     * 등록 V2: 요청 값으로 Member 엔티티 대신에 별도의 DTO를 받는다.
+     */
+    @PostMapping("/v2/members")
+    public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
+        Member member = Member.builder()
+                .name(request.name)
+                .build();
+        Long id = memberService.join(member);
+        return CreateMemberResponse.builder()
+                .id(id)
+                .build();
+    }
+
+    /**
+     * API parameter DTO(parameter)
+     */
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     private static class CreateMemberResponse {
@@ -46,6 +67,22 @@ public class MemberApiController {
         @Builder
         private CreateMemberResponse(Long id) {
             this.id = id;
+        }
+
+    }
+
+    /**
+     * API parameter DTO(return)
+     */
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    private static class CreateMemberRequest {
+        @NotEmpty
+        private String name;
+
+        @Builder
+        private CreateMemberRequest(String name) {
+            this.name = name;
         }
     }
 }
