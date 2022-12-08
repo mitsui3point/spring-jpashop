@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 public class OrderRepositoryTest {
+    private final String memberName = "member1";
     private final String book1Name = "jpa book";
     private final int book1StockQuantity = 10;
     private final int book1Price = 10000;
@@ -37,6 +38,7 @@ public class OrderRepositoryTest {
             .zipcode("123-123")
             .build();
     private final Member member = Member.builder()
+            .name(memberName)
             .address(address)
             .build();
     private final Delivery delivery = Delivery.builder()

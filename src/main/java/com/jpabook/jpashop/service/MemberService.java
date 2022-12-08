@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.service;
 
 import com.jpabook.jpashop.domain.Member;
+import com.jpabook.jpashop.domain.constants.ExceptionMessage;
 import com.jpabook.jpashop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.jpabook.jpashop.domain.constants.ExceptionMessage.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+
 
     /**
      * 회원 가입
@@ -27,7 +31,7 @@ public class MemberService {
     private void validateDuplicateMemberName(Member member) {
         boolean isExistDuplicateMember = !memberRepository.findByName(member.getName()).isEmpty();
         if (isExistDuplicateMember) {
-            throw new IllegalStateException("중복된 이름이 존재합니다.");
+            throw new IllegalStateException(ALREADY_EXISTS_NAME.getMessage());
         }
     }
 
