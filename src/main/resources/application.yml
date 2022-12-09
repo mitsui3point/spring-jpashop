@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none # 조회상 편의를 위한 설정
+      ddl-auto: create # application 실행 시점에 내가 갖고 있는 table(entity) 들을 삭제하고, 다시 생성
     properties:
       hibernate:
 #        show_sql: true # Sysout 으로 로깅; 보통 운영에는 반영하지 않음
