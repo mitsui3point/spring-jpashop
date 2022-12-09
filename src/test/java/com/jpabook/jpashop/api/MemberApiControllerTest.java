@@ -17,10 +17,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.jpabook.jpashop.api.MemberApiController.MemberDto;
+import static com.jpabook.jpashop.api.MemberApiController.Results;
 import static com.jpabook.jpashop.domain.constants.ExceptionMessage.ALREADY_EXISTS_NAME;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +37,8 @@ public class MemberApiControllerTest {
     private static final String MEMBER_JOIN_V1_URL = BASE_URL + "/v1/members";
     private static final String MEMBER_JOIN_V2_URL = BASE_URL + "/v2/members";
     private static final String MEMBER_UPDATE_NAME_V2_URL = BASE_URL + "/v2/members/";
+    private static final String MEMBER_GET_V1_URL = BASE_URL + "/v1/members";
+    private static final String MEMBER_GET_V2_URL = BASE_URL + "/v2/members";
     @Autowired
     private ObjectMapper mapper;
     @Autowired
@@ -65,6 +70,7 @@ public class MemberApiControllerTest {
     void 회원_가입_V1() throws Exception {
         memberJoin(MEMBER_JOIN_V1_URL);
     }
+
     @Test
     void 회원_가입_V2() throws Exception {
         memberJoin(MEMBER_JOIN_V2_URL);
@@ -125,6 +131,59 @@ public class MemberApiControllerTest {
         //then
         performNoName.andDo(print())
                 .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void 회원_전체조회_V1() throws Exception {
+        //given
+        List<Member> expectedMembers = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Member member = Member.builder().name("member" + i).build();
+            expectedMembers.add(member);
+            memberService.join(member);
+        }
+
+        //when
+        ResultActions perform = mvc.perform(get(MEMBER_GET_V1_URL)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        perform.andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(expectedMembers)));
+
+    }
+
+    @Test
+    void 회원_전체조회_V2() throws Exception {
+        //given
+        List<MemberDto> memberDtos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Member member = Member
+                    .builder()
+                    .name("member" + i)
+                    .build();
+            memberDtos.add(MemberDto
+                    .builder()
+                    .name(member.getName())
+                    .build());
+            memberService.join(member);
+        }
+        Results<Object> expected = Results
+                .builder()
+                .data(memberDtos)
+                .count(memberDtos.size())
+                .build();
+
+        //when
+        ResultActions perform = mvc.perform(get(MEMBER_GET_V2_URL)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        perform.andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(expected)));
 
     }
 

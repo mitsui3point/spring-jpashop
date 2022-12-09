@@ -1,5 +1,6 @@
 package com.jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class Member {
     @Embedded
     private Address address;
 
+    //@JsonIgnore:@ResponseBody Json return 제외 annotation
     @OneToMany(mappedBy = "member")//관계설정
     private List<Order> orders = new ArrayList<>();
 
