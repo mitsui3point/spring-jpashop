@@ -46,7 +46,7 @@ public class Order {
         this.delivery = delivery;
         this.status = status;
         for (OrderItem orderItem : orderItems) {
-            this.orderItems.add(orderItem);
+            this.addOrderItem(orderItem);
         }
         this.orderDate = LocalDateTime.now();
     }
