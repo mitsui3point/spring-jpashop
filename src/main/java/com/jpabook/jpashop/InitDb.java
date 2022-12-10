@@ -43,17 +43,17 @@ public class InitDb {
                     .build();
         }
 
-        private static OrderItem createOrderItem(Book jpa1Book, int orderPrice, int count) {
+        private static OrderItem createOrderItem(Book book, int orderPrice, int count) {
             return OrderItem.builder()
-                    .item(jpa1Book)
+                    .item(book)
                     .orderPrice(orderPrice)
                     .count(count)
                     .build();
         }
 
-        private static Book createBook(String JPA1_BOOK, int price, int stockQuantity) {
+        private static Book createBook(String name, int price, int stockQuantity) {
             return Book.builder()
-                    .name(JPA1_BOOK)
+                    .name(name)
                     .price(price)
                     .stockQuantity(stockQuantity)
                     .build();
