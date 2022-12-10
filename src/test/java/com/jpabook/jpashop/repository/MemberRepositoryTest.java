@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,14 +46,16 @@ public class MemberRepositoryTest {
     @Test
     void 회원_데이터_전체_조회() {
         //given
+        List<Member> expected = em.createQuery("select m from Member m", Member.class)
+                .getResultList();
         memberRepository.save(memberA);
         memberRepository.save(memberB);
         memberRepository.save(memberC);
-        Member[] expected = new Member[]{memberC, memberB, memberA};
+        expected.addAll(Arrays.asList(memberA, memberB, memberC));
         //when
         List<Member> actual = memberRepository.findAll();
         //then
-        assertThat(actual).containsOnly(expected);
+        assertThat(actual).containsExactly(expected.toArray(Member[]::new));
     }
 
     @Test

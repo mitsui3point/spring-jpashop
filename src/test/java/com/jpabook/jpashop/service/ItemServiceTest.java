@@ -70,7 +70,8 @@ public class ItemServiceTest {
     @Test
     void 상품전체조회() {
         //given
-        List<Item> expected = Arrays.asList(new Item[]{albumA, albumB, bookA, bookB, movieA, movieB});
+        List<Item> expected = em.createQuery("select b from Book b").getResultList();
+        expected.addAll(Arrays.asList(albumA, albumB, bookA, bookB, movieA, movieB));
         //when
         for (Item item : expected) {
             itemService.saveItemMerge(item);

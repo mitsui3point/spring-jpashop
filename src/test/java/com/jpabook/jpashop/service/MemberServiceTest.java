@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,13 +62,17 @@ public class MemberServiceTest {
     @Test
     void 회원전체조회() {
         //given
+        List<Member> expected = em.createQuery("select m from Member m")
+                .getResultList();
         memberService.join(memberA);
         memberService.join(memberB);
         memberService.join(memberC);
+        expected.addAll(Arrays.asList(memberA, memberB, memberC));
+
         //when
         List<Member> actual = memberService.findAll();
         //then
-        assertThat(actual).containsOnly(memberA, memberB, memberC);
+        assertThat(actual).containsExactly(expected.toArray(Member[]::new));
     }
 
     @Test

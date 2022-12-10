@@ -49,7 +49,7 @@ public class ItemRepositoryTest {
         //given
         Item expected = albumA;
         //when
-        itemRepository.saveMerge(albumA);
+        itemRepository.save(albumA);
         Item actual = itemRepository.findOne(albumA.getId());
         //then
         assertThat(actual).isEqualTo(expected);
@@ -60,9 +60,9 @@ public class ItemRepositoryTest {
         //given
         String expected = "bookA";
         //when
-        itemRepository.saveMerge(movieA);
+        itemRepository.save(movieA);
         movieA.changeName(expected);
-        itemRepository.saveMerge(movieA);
+        itemRepository.save(movieA);
         Item actual = itemRepository.findOne(movieA.getId());
         //then
         assertThat(actual.getName()).isEqualTo(expected);
@@ -71,10 +71,12 @@ public class ItemRepositoryTest {
     @Test
     void 상품_데이터_전체_조회() {
         //given
-        List<Item> expected = Arrays.asList(new Item[]{albumA, albumB, bookA, bookB, movieA, movieB});
+        List<Item> expected = em.createQuery("select b from Book b").getResultList();
+        List<Item> addItems = Arrays.asList(albumA, albumB, bookA, bookB, movieA, movieB);
+        expected.addAll(addItems);
         //when
-        for (Item item : expected) {
-            itemRepository.saveMerge(item);
+        for (Item item : addItems) {
+            itemRepository.save(item);
         }
         List<Item> actual = itemRepository.findAll();
         //then

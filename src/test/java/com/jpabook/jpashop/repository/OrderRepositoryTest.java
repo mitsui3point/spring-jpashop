@@ -172,7 +172,7 @@ public class OrderRepositoryTest {
 
         OrderSearch orderSearch = new OrderSearch();
         orderSearch.setMemberName(member2.getName());
-        List<Order> expected = Arrays.asList(new Order[]{order2});
+        List<Order> expected = Arrays.asList(order2);
 
         //when
         List<Order> actual = orderRepository.findAllByString(orderSearch);
@@ -242,7 +242,7 @@ public class OrderRepositoryTest {
 
         OrderSearch orderSearch = new OrderSearch();
         orderSearch.setMemberName(member2.getName());
-        List<Order> expected = Arrays.asList(new Order[]{order2});
+        List<Order> expected = Arrays.asList(order2);
 
         //when
         List<Order> actual = orderRepository.findAllByCriteria(orderSearch);

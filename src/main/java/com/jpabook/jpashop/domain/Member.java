@@ -26,7 +26,7 @@ public class Member {
     @Embedded
     private Address address;
 
-    //@JsonIgnore:@ResponseBody Json return 제외 annotation
+    @JsonIgnore//:@ResponseBody Json return 제외 annotation
     @OneToMany(mappedBy = "member")//관계설정
     private List<Order> orders = new ArrayList<>();
 

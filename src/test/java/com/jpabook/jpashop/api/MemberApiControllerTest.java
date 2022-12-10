@@ -17,16 +17,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jpabook.jpashop.api.MemberApiController.MemberDto;
 import static com.jpabook.jpashop.api.MemberApiController.Results;
 import static com.jpabook.jpashop.domain.constants.ExceptionMessage.ALREADY_EXISTS_NAME;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -109,10 +108,10 @@ public class MemberApiControllerTest {
         );
 
         //then
-        String expected = "{\"id\":1,\"name\":\"updateMember\"}";
+        String expected = "updateMember";
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(expected));
+                .andExpect(jsonPath("$.name").value(expected));
 
     }
 
@@ -135,14 +134,11 @@ public class MemberApiControllerTest {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void 회원_전체조회_V1() throws Exception {
         //given
-        List<Member> expectedMembers = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Member member = Member.builder().name("member" + i).build();
-            expectedMembers.add(member);
-            memberService.join(member);
-        }
+        List expectedMembers = em.createNativeQuery("select m.name as name from Member m")
+                .getResultList();
 
         //when
         ResultActions perform = mvc.perform(get(MEMBER_GET_V1_URL)
@@ -151,25 +147,23 @@ public class MemberApiControllerTest {
         //then
         perform.andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(expectedMembers)));
+                .andExpect(jsonPath("$[*].name").value(expectedMembers));//양방향 매핑 순환참조로 인한 json direct compare 불가
 
     }
 
     @Test
+    @Transactional(readOnly = true)
     void 회원_전체조회_V2() throws Exception {
         //given
-        List<MemberDto> memberDtos = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Member member = Member
-                    .builder()
-                    .name("member" + i)
-                    .build();
-            memberDtos.add(MemberDto
-                    .builder()
-                    .name(member.getName())
-                    .build());
-            memberService.join(member);
-        }
+        List<MemberDto> memberDtos = em.createQuery("select m from Member m", Member.class)
+                .getResultList()
+                .stream()
+                .map(member -> {
+                    return MemberDto.builder()
+                            .name(member.getName())
+                            .build();
+                })
+                .collect(Collectors.toList());
         Results<Object> expected = Results
                 .builder()
                 .data(memberDtos)
@@ -189,7 +183,6 @@ public class MemberApiControllerTest {
 
     private void memberJoin(String url) throws Exception {
         //given
-        String expectJson = "{\"id\":1}";
 
         //when
         String body = mapper.writeValueAsString(member);
@@ -197,11 +190,16 @@ public class MemberApiControllerTest {
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
         );
+        Long expectedId = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", member.getName())
+                .getSingleResult()
+                .getId();
 
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectJson));
+                .andExpect(jsonPath("$.id").value(expectedId));
+//                .andExpect(content().json(expectJson));
     }
 
     private void memberJoinDuplicateName(String url) throws JsonProcessingException {
@@ -233,8 +231,6 @@ public class MemberApiControllerTest {
 
     @AfterEach
     void tearDown() {
-        em.createNativeQuery("alter sequence hibernate_sequence restart with 1")
-                .executeUpdate();
         em.flush();
         em.clear();
     }
