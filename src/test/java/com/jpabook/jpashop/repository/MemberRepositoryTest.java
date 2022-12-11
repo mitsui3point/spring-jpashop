@@ -1,14 +1,15 @@
 package com.jpabook.jpashop.repository;
 
+import com.jpabook.jpashop.MemberTestDataField;
 import com.jpabook.jpashop.domain.Member;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,21 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class MemberRepositoryTest {
+public class MemberRepositoryTest extends MemberTestDataField {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private EntityManager em;
 
-    private final Member memberA = Member.builder()
-            .name("memberA")
-            .build();
-    private final Member memberB = Member.builder()
-            .name("memberB")
-            .build();
-    private final Member memberC = Member.builder()
-            .name("memberC")
-            .build();
+    @BeforeEach
+    void setUp() {
+        init();
+    }
 
     @Test
     void 회원_데이터_등록_조회() {

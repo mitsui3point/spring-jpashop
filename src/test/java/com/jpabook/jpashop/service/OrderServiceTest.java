@@ -1,5 +1,6 @@
 package com.jpabook.jpashop.service;
 
+import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.domain.Order;
@@ -9,6 +10,7 @@ import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,12 +24,15 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 @Transactional(readOnly = true)
-public class OrderServiceTest {
+public class OrderServiceTest extends OrderTestDataField {
     @Autowired
     private OrderService orderService;
-    @PersistenceContext
+    @Autowired
     private EntityManager em;
-
+    @BeforeEach
+    void setUp() {
+        init();
+    }
     @Test
     @Transactional
     void 주문() {
@@ -42,11 +47,12 @@ public class OrderServiceTest {
                         .city("서울")
                         .street("스트릿")
                         .zipcode("123-123")
-                        .build()
-        );
+                        .build(),
+                em);
         Long itemId = persistBookItem("jpa book1",
                 stockQuantity,
-                10000);
+                10000,
+                em);
         Member expectedMember = em.find(Member.class, memberId);
         Item expectedItem = em.find(Book.class, itemId);
 
@@ -81,12 +87,12 @@ public class OrderServiceTest {
                         .city("서울")
                         .street("스트릿")
                         .zipcode("123-123")
-                        .build()
-        );
+                        .build(),
+                em);
         Long itemId = persistBookItem("jpa book1",
                 stockQuantity,
-                10000
-        );
+                10000,
+                em);
 
         //then
         assertThatExceptionOfType(NotEnoughItemStockException.class)
@@ -107,12 +113,12 @@ public class OrderServiceTest {
                         .city("서울")
                         .street("스트릿")
                         .zipcode("123-123")
-                        .build()
-        );
+                        .build(),
+                em);
         Long itemId = persistBookItem("jpa book1",
                 expected,
-                10000
-        );
+                10000,
+                em);
         Long orderId = orderService.order(memberId,
                 itemId,
                 count
@@ -142,17 +148,16 @@ public class OrderServiceTest {
                         .city("서울")
                         .street("스트릿")
                         .zipcode("123-123")
-                        .build()
-        );
+                        .build(),
+                em);
         Long itemId = persistBookItem("jpa book1",
                 expected,
-                10000
-        );
+                10000,
+                em);
         Long orderId = orderService.order(
                 memberId,
                 itemId,
-                count
-        );
+                count);
 
         orderService.findOne(orderId)
                 .getDelivery()
@@ -169,28 +174,5 @@ public class OrderServiceTest {
     @AfterEach
     void tearDown() {
         em.flush();
-    }
-
-    private Long persistMember(String name, Address address) {
-        Member member = Member.builder()
-                .name(name)
-                .address(address)
-                .build();
-
-        em.persist(member);
-
-        return member.getId();
-    }
-
-    private Long persistBookItem(String name, int stockQuantity, int price) {
-        Item book = Book.builder()
-                .name(name)
-                .stockQuantity(stockQuantity)
-                .price(price)
-                .build();
-
-        em.persist(book);
-
-        return book.getId();
     }
 }

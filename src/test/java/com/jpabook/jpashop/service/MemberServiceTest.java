@@ -1,8 +1,10 @@
 package com.jpabook.jpashop.service;
 
+import com.jpabook.jpashop.MemberTestDataField;
 import com.jpabook.jpashop.domain.Member;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,21 +18,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class MemberServiceTest {
+public class MemberServiceTest extends MemberTestDataField {
     @Autowired
     private MemberService memberService;
     @Autowired
     private EntityManager em;
 
-    private final Member memberA = Member.builder()
-            .name("memberA")
-            .build();
-    private final Member memberB = Member.builder()
-            .name("memberB")
-            .build();
-    private final Member memberC = Member.builder()
-            .name("memberC")
-            .build();
+    @BeforeEach
+    void setUp() {
+        init();
+    }
 
     @Test
     void 회원가입() {

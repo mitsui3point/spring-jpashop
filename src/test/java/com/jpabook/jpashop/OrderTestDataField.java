@@ -10,7 +10,7 @@ import com.jpabook.jpashop.domain.item.Item;
 
 import javax.persistence.EntityManager;
 
-public class OrderTestData {
+public class OrderTestDataField {
     protected String member1Name;
     protected String book1Name;
     protected int book1StockQuantity;

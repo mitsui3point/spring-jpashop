@@ -1,5 +1,6 @@
 package com.jpabook.jpashop.service;
 
+import com.jpabook.jpashop.ItemTestDataField;
 import com.jpabook.jpashop.controller.dto.ItemDTO;
 import com.jpabook.jpashop.controller.form.BookForm;
 import com.jpabook.jpashop.domain.item.Book;
@@ -15,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class ItemUpdateTest {
-    @PersistenceContext
+public class ItemUpdateTest extends ItemTestDataField {
+    @Autowired
     private EntityManager em;
     @Autowired
     private ItemService itemService;
@@ -24,12 +25,12 @@ public class ItemUpdateTest {
     @Test
     void itemUpdateUsingMergeTest() {
         //given
-        Book item1 = Book.builder()
+        Book book1 = Book.builder()
                 .name("item")
                 .author("author1")
                 .build();
         //when
-        Book actualInsert = (Book) itemService.findOne(itemService.saveItemMerge(item1));
+        Book actualInsert = (Book) itemService.findOne(itemService.saveItemMerge(book1));
         em.flush();
         //then
         assertThat(actualInsert.getName())
@@ -41,7 +42,7 @@ public class ItemUpdateTest {
         Book item2 = Book.builder()
                 .name("item2")
                 .build();
-        item2.changeId(item1.getId());
+        item2.changeId(book1.getId());
         item2.changeName("item2");
         //when
         Book actualUpdate = (Book) itemService.findOne(itemService.saveItemMerge(item2));

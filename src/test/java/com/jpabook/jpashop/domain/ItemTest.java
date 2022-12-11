@@ -1,19 +1,20 @@
 package com.jpabook.jpashop.domain;
 
+import com.jpabook.jpashop.ItemTestDataField;
 import com.jpabook.jpashop.domain.item.Album;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-//@SpringBootTest
-public class ItemTest {
-
-    private int addStockQuantity = 4;
-    private int subtractStockQuantity = 3;
-    private int subtractBiggerThanStockQuantity = 5;
+public class ItemTest extends ItemTestDataField {
+    @BeforeEach
+    void setUp() {
+        init();
+    }
 
     @Test
     void 상품_재고_add() {

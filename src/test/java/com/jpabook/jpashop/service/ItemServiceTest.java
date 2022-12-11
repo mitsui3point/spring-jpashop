@@ -1,10 +1,12 @@
 package com.jpabook.jpashop.service;
 
+import com.jpabook.jpashop.ItemTestDataField;
 import com.jpabook.jpashop.domain.item.Album;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.domain.item.Movie;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,30 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class ItemServiceTest {
+public class ItemServiceTest extends ItemTestDataField {
     @Autowired
     private ItemService itemService;
     @Autowired
     private EntityManager em;
 
-    private final Item albumA = Album.builder()
-            .name("albumA")
-            .build();
-    private final Item albumB = Album.builder()
-            .name("albumB")
-            .build();
-    private final Item bookA = Book.builder()
-            .name("bookA")
-            .build();
-    private final Item bookB = Book.builder()
-            .name("bookB")
-            .build();
-    private final Item movieA = Movie.builder()
-            .name("movieA")
-            .build();
-    private final Item movieB = Movie.builder()
-            .name("movieA")
-            .build();
+    @BeforeEach
+    void setUp() {
+        init();
+    }
 
     @Test
     public void 상품저장() {
