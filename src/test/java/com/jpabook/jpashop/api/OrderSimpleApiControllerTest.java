@@ -1,8 +1,9 @@
 package com.jpabook.jpashop.api;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jpabook.jpashop.domain.Category;
 import com.jpabook.jpashop.domain.Order;
+import com.jpabook.jpashop.domain.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,10 +36,25 @@ class OrderSimpleApiControllerTest {
 
     @BeforeEach
     void setUp() {
-        initOrders = em.createQuery("select o from orders o join o.member m",
+        initOrders = em.createQuery("select o from orders o join o.member m ",
                         Order.class)
                 .getResultList()
                 .toArray(Order[]::new);
+        initOrderObjectGraph();
+    }
+
+    private void initOrderObjectGraph() {
+        for (Order initOrder : initOrders) {
+            initOrder.getMember().getName();
+            initOrder.getDelivery().getDeliveryStatus();
+            for (OrderItem orderItem : initOrder.getOrderItems()) {
+                orderItem.getOrderPrice();
+                orderItem.getItem().getName();
+                for (Category category : orderItem.getItem().getCategories()) {
+                    category.getName();
+                }
+            }
+        }
     }
 
     @Test
