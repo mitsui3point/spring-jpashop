@@ -17,4 +17,4 @@ spring: # test 시 test > resource > application.yml 이 main > resource > appli
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.type: trace
+#    org.hibernate.type: trace
