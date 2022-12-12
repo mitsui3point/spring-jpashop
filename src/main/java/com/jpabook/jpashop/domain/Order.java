@@ -26,7 +26,7 @@ public class Order {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member member;// = new ByteBuddyInterceptor();//proxy 객체(초기에는 비어있음)가 대신 생성되어 들어감, Hibernate5Module 을 빈등록해 주어야 한다.
 
     @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderItem> orderItems = new ArrayList<>();

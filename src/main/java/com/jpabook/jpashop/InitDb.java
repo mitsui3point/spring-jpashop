@@ -17,15 +17,17 @@ public class InitDb {
     private final InitService initService;
 
     @PostConstruct
-    public void init() {
-        initService.dbInit1();
-        initService.dbInit2();
+    public Order[] init() {
+        return new Order[]{
+            initService.dbInit1(),
+            initService.dbInit2()
+        };
     }
 
     @Component
     @RequiredArgsConstructor
     @Transactional
-    static class InitService {
+    public static class InitService {
         private final EntityManager em;
 
         private static Order createOrder(Member member, Delivery delivery, OrderStatus status, OrderItem... orderItems) {
@@ -82,7 +84,7 @@ public class InitDb {
          * SPRING1 BOOK
          * SPRING2 BOOK
          */
-        public void dbInit1() {
+        public Order dbInit1() {
 
             Address address = createAddress("서울", "1", "1111");
 
@@ -101,9 +103,10 @@ public class InitDb {
             Order order = createOrder(member, delivery, OrderStatus.ORDER, orderItem1, orderItem2);
 
             em.persist(order);
+            return order;
         }
 
-        public void dbInit2() {
+        public Order dbInit2() {
 
             Address address = createAddress("진주", "2", "2222");
 
@@ -122,6 +125,7 @@ public class InitDb {
             Order order = createOrder(member, delivery, OrderStatus.ORDER, orderItem1, orderItem2);
 
             em.persist(order);
+            return order;
         }
     }
 }

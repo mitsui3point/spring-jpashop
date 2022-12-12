@@ -1,5 +1,6 @@
 package com.jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jpabook.jpashop.domain.enums.DeliveryStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class Delivery {
     @Column(name = "delivery_id")
     private Long id;
 
+    @JsonIgnore//:@ResponseBody Json return 제외 annotation
     @OneToOne(mappedBy = "delivery", fetch = LAZY)
     private Order order;
 

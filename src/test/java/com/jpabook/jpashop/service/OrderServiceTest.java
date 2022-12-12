@@ -9,6 +9,7 @@ import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
+import com.jpabook.jpashop.repository.OrderSearch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -169,6 +172,20 @@ public class OrderServiceTest extends OrderTestDataField {
                     //when
                     orderService.cancel(orderId);
                 }).withMessageContaining("배송이 완료된 상품은 주문취소가 불가능합니다.");
+    }
+
+    @Test
+    void 주문_전체조회() {
+        //given
+        List<Order> expected = em.createQuery("select o from orders o join o.member m on m.name = :name", Order.class)
+                .setParameter("name", "userB")
+                .getResultList();
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setMemberName("userB");
+        //when
+        List<Order> actual = orderService.findAll(orderSearch);
+        //then
+        assertThat(actual).isEqualTo(expected);
     }
 
     @AfterEach
