@@ -53,9 +53,22 @@ public class OrderSimpleApiController {
         //N + 1 -> 1 + 회원 N + 배송 N
         return orderService.findAll(new OrderSearch())
                 .stream()
-                .map(order -> SimpleOrderDto.builder()
+                .map(order ->
+                        SimpleOrderDto.builder()
                             .order(order)
                             .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> ordersV3() {
+        return orderService.findAllWithMemberDelivery()
+                .stream()
+                .map(order ->
+                        SimpleOrderDto.builder()
+                                .order(order)
+                                .build()
                 )
                 .collect(Collectors.toList());
     }

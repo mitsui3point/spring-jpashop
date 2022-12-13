@@ -1,7 +1,7 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.OrderTestDataField;
-import com.jpabook.jpashop.domain.*;
+import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +26,7 @@ public class OrderRepositoryTest extends OrderTestDataField {
     private OrderRepository orderRepository;
     @Autowired
     private EntityManager em;
+
     @BeforeEach
     void setUp() {
         init();
@@ -65,8 +69,8 @@ public class OrderRepositoryTest extends OrderTestDataField {
         //when
         order.cancel();
         OrderStatus actual = orderRepository.findById(
-                order.getId()
-        )
+                        order.getId()
+                )
                 .getStatus();
 
         //then
@@ -111,7 +115,6 @@ public class OrderRepositoryTest extends OrderTestDataField {
     @Test
     void 주문_전체_조회_criteria() {
         //given
-
         Order order = Order.builder()
                 .member(member1)
                 .delivery(delivery1)
@@ -138,6 +141,25 @@ public class OrderRepositoryTest extends OrderTestDataField {
 
         //when
         List<Order> actual = orderRepository.findAllByCriteria(orderSearch);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문전체_회원_배송_조회() {
+        //given
+        List<Map> expected = em.createQuery("select o from orders o", Order.class)
+                .getResultList()
+                .stream()
+                .map(this::getHashMapOrderMemberDelivery)
+                .collect(Collectors.toList());
+
+        //when
+        List<Map> actual = orderRepository.findAllWithMemberDelivery()
+                .stream()
+                .map(this::getHashMapOrderMemberDelivery)
+                .collect(Collectors.toList());
 
         //then
         assertThat(actual).isEqualTo(expected);

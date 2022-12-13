@@ -1,14 +1,13 @@
 package com.jpabook.jpashop;
 
-import com.jpabook.jpashop.domain.Address;
-import com.jpabook.jpashop.domain.Delivery;
-import com.jpabook.jpashop.domain.Member;
-import com.jpabook.jpashop.domain.OrderItem;
+import com.jpabook.jpashop.domain.*;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 
 import javax.persistence.EntityManager;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrderTestDataField {
     protected String member1Name;
@@ -178,5 +177,27 @@ public class OrderTestDataField {
         em.persist(book);
 
         return book.getId();
+    }
+
+    protected void initOrderObjectGraph(Order[] initOrders) {
+        for (Order initOrder : initOrders) {
+            initOrder.getMember().getName();
+            initOrder.getDelivery().getDeliveryStatus();
+            for (OrderItem orderItem : initOrder.getOrderItems()) {
+                orderItem.getOrderPrice();
+                orderItem.getItem().getName();
+                for (Category category : orderItem.getItem().getCategories()) {
+                    category.getName();
+                }
+            }
+        }
+    }
+
+    protected Map<String, Object> getHashMapOrderMemberDelivery(Order order) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("orderStatus", order.getStatus());
+        result.put("memberName", order.getMember().getName());
+        result.put("deliveryAddressCity", order.getDelivery().getAddress().getCity());
+        return result;
     }
 }

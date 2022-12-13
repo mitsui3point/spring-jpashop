@@ -1,9 +1,8 @@
 package com.jpabook.jpashop.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jpabook.jpashop.domain.Category;
+import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.domain.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional(readOnly = true)
-class OrderSimpleApiControllerTest {
+class OrderSimpleApiControllerTest extends OrderTestDataField {
     private static final String BASE_URL = "/api";
     private static final String ORDER_GET_V1_URL = BASE_URL + "/v1/simple-orders";
     private static final String ORDER_GET_V2_URL = BASE_URL + "/v2/simple-orders";
+    private static final String ORDER_GET_V3_URL = BASE_URL + "/v3/simple-orders";
 
     @Autowired
     private ObjectMapper mapper;
@@ -40,16 +40,17 @@ class OrderSimpleApiControllerTest {
 
     @BeforeEach
     void setUp() {
+        init();
     }
 
     @Test
     void 주문_전체조회_V1() throws Exception {
         //given
-        initOrders = em.createQuery("select o from orders o join o.member m ",
+        initOrders = em.createQuery("select o from orders o ",
                         Order.class)
                 .getResultList()
                 .toArray(Order[]::new);
-        initOrderObjectGraph();
+        initOrderObjectGraph(initOrders);
         String expected = mapper.writeValueAsString(initOrders);
 
         //when
@@ -90,17 +91,28 @@ class OrderSimpleApiControllerTest {
                 .andExpect(content().json(expected));
     }
 
-    private void initOrderObjectGraph() {
-        for (Order initOrder : initOrders) {
-            initOrder.getMember().getName();
-            initOrder.getDelivery().getDeliveryStatus();
-            for (OrderItem orderItem : initOrder.getOrderItems()) {
-                orderItem.getOrderPrice();
-                orderItem.getItem().getName();
-                for (Category category : orderItem.getItem().getCategories()) {
-                    category.getName();
-                }
-            }
-        }
+    @Test
+    void 주문_전체조회_V3() throws Exception {
+        //given
+        SimpleOrderDto[] initOrderDto = em.createQuery("select o from orders o ", Order.class)
+                .getResultList()
+                .stream()
+                .map(o -> SimpleOrderDto.builder()
+                        .order(o)
+                        .build()
+                )
+                .toArray(SimpleOrderDto[]::new);
+
+        String expected = mapper.writeValueAsString(initOrderDto);
+
+        //when
+        System.out.println("==================================when==================================");
+        ResultActions perform = mvc.perform(get(ORDER_GET_V3_URL));
+        System.out.println("==================================when==================================");
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(expected));
     }
 }

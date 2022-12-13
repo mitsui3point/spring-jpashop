@@ -9,6 +9,7 @@ import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
+import com.jpabook.jpashop.repository.OrderRepositoryTest;
 import com.jpabook.jpashop.repository.OrderSearch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -32,10 +33,12 @@ public class OrderServiceTest extends OrderTestDataField {
     private OrderService orderService;
     @Autowired
     private EntityManager em;
+
     @BeforeEach
     void setUp() {
         init();
     }
+
     @Test
     @Transactional
     void 주문() {
@@ -184,6 +187,25 @@ public class OrderServiceTest extends OrderTestDataField {
         orderSearch.setMemberName("userB");
         //when
         List<Order> actual = orderService.findAll(orderSearch);
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문전체_회원_배송_조회() {
+        //given
+        List<Map> expected = em.createQuery("select o from orders o", Order.class)
+                .getResultList()
+                .stream()
+                .map(this::getHashMapOrderMemberDelivery)
+                .collect(Collectors.toList());
+
+        //when
+        List<Map> actual = orderService.findAllWithMemberDelivery()
+                .stream()
+                .map(this::getHashMapOrderMemberDelivery)
+                .collect(Collectors.toList());
+
         //then
         assertThat(actual).isEqualTo(expected);
     }
