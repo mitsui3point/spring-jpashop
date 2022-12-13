@@ -6,6 +6,8 @@ import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.OrderItem;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.repository.OrderSearch;
+import com.jpabook.jpashop.repository.simplequery.OrderSimpleQueryDto;
+import com.jpabook.jpashop.repository.simplequery.OrderSimpleQueryService;
 import com.jpabook.jpashop.service.OrderService;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderSimpleApiController {
     private final OrderService orderService;
+    private final OrderSimpleQueryService orderSimpleQueryService;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
@@ -71,6 +74,11 @@ public class OrderSimpleApiController {
                                 .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4() {
+        return orderSimpleQueryService.findOrderDtos();
     }
 
     @Getter

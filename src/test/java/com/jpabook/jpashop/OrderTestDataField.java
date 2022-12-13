@@ -1,5 +1,7 @@
 package com.jpabook.jpashop;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jpabook.jpashop.domain.*;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
@@ -55,6 +57,10 @@ public class OrderTestDataField {
     protected OrderItem orderItem4;
     protected OrderItem[] orderItems2;
 
+    /**
+     * https://itpro.tistory.com/117
+     */
+    protected ObjectMapper mapper;
     protected void init() {
         member1Name = "member1";
 
@@ -154,6 +160,9 @@ public class OrderTestDataField {
                 .count(book4OrderCount)
                 .build();
         orderItems2 = new OrderItem[]{orderItem3, orderItem4};
+
+        mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule());
     }
 
     protected Long persistMember(String name, Address address, EntityManager em) {
