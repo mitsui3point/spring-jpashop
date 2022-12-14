@@ -13,13 +13,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * <p>
  * V1. 엔티티 직접 노출
  * - 엔티티가 변하면 API 스펙이 변한다.
  * - 트랜잭션 안에서 지연 로딩 필요
  * - 양방향 연관관계 문제
- *
+ * </p>
+ * <p>
  * V2. 엔티티를 조회해서 DTO로 변환(fetch join 사용X)
  * - 트랜잭션 안에서 지연 로딩 필요
+ * </p>
+ * <p>
+ * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
+ * - 페이징 시에는 N 부분을 포기해야함
+ * </p>
  */
 @RestController
 @RequiredArgsConstructor
@@ -54,8 +61,23 @@ public class OrderApiController {
         return orderService.findAll(new OrderSearch())
                 .stream()
                 .map(order -> OrderApiDto.builder()
-                            .order(order)
-                            .build()
+                        .order(order)
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
+     * - 페이징 시에는 N 부분을 포기해야함
+     */
+    @GetMapping("/api/v3/orders")
+    public List<OrderApiDto> ordersV3() {
+        return orderService.findAllWithItem()
+                .stream()
+                .map(order -> OrderApiDto.builder()
+                        .order(order)
+                        .build()
                 )
                 .collect(Collectors.toList());
     }

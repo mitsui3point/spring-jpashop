@@ -95,4 +95,14 @@ public class OrderRepository {
                 "join fetch o.delivery d", Order.class)
                 .getResultList();
     }
+
+    public List<Order> findAllWithItem() {
+        return em.createQuery("select distinct o from orders o " +
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d " +
+                        "join fetch o.orderItems oi " +
+                        "join fetch oi.item i ", Order.class)
+                //.setFirstResult(1).setMaxResults(100)// WARN 14468 --- [nio-8080-exec-1] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+                .getResultList();
+    }
 }

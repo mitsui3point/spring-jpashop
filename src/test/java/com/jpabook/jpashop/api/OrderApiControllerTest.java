@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +29,7 @@ public class OrderApiControllerTest extends OrderTestDataField {
     private static final String BASE_URL = "/api";
     private static final String ORDER_GET_V1_URL = BASE_URL + "/v1/orders";
     private static final String ORDER_GET_V2_URL = BASE_URL + "/v2/orders";
+    private static final String ORDER_GET_V3_URL = BASE_URL + "/v3/orders";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -75,6 +75,28 @@ public class OrderApiControllerTest extends OrderTestDataField {
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V2_URL));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void 주문목록_상세_조회_V3() throws Exception {
+        //given
+        List<OrderApiDto> expected = em.createQuery("select o from orders o ", Order.class)
+                .getResultList()
+                .stream()
+                .map(order -> OrderApiDto.builder()
+                        .order(order)
+                        .build())
+                .collect(Collectors.toList());
+
+        String expectedJson = mapper.writeValueAsString(expected);
+
+        //when
+        ResultActions perform = mvc.perform(get(ORDER_GET_V3_URL));
 
         //then
         perform.andDo(print())

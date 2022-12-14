@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.OrderTestDataField;
+import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -147,6 +147,7 @@ public class OrderRepositoryTest extends OrderTestDataField {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void 주문전체_회원_배송_조회() {
         //given
         List<Map> expected = em.createQuery("select o from orders o", Order.class)
@@ -160,6 +161,27 @@ public class OrderRepositoryTest extends OrderTestDataField {
                 .stream()
                 .map(this::getHashMapOrderMemberDelivery)
                 .collect(Collectors.toList());
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    void 주문전체_상품목록() {
+        //given
+        List<Order> expected = em.createQuery("select o from orders o", Order.class)
+                .getResultList();
+        expected.forEach(order -> {
+            order.getMember().getName();
+            order.getDelivery().getAddress();
+            order.getOrderItems().forEach(orderItem -> {
+                orderItem.getItem().getName();
+            });
+        });
+
+        //when
+        List<Order> actual = orderRepository.findAllWithItem();
 
         //then
         assertThat(actual).isEqualTo(expected);

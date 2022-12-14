@@ -76,4 +76,8 @@ public class OrderService {
     public List<Order> findAllWithMemberDelivery() {
         return orderRepository.findAllWithMemberDelivery();
     }
+
+    public List<Order> findAllWithItem() {
+        return orderRepository.findAllWithItem();
+    }
 }

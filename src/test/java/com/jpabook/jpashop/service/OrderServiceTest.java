@@ -210,6 +210,26 @@ public class OrderServiceTest extends OrderTestDataField {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    void 주문전체_상품_조회() {
+        //given
+        List<Order> expected = em.createQuery("select o from orders o", Order.class)
+                .getResultList();
+        expected.forEach(order -> {
+            order.getMember().getName();
+            order.getDelivery().getAddress();
+            order.getOrderItems().forEach(orderItem -> {
+                orderItem.getItem().getName();
+            });
+        });
+
+        //when
+        List<Order> actual =orderService.findAllWithItem();
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @AfterEach
     void tearDown() {
         em.flush();
