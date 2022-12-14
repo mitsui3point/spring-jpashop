@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;// = new ByteBuddyInterceptor();//proxy 객체(초기에는 비어있음)가 대신 생성되어 들어감, Hibernate5Module 을 빈등록해 주어야 한다.
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
