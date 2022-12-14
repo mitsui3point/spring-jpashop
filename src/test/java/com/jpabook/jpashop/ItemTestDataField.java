@@ -5,7 +5,7 @@ import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.domain.item.Movie;
 
-public class ItemTestDataField {
+public class ItemTestDataField extends TestField {
     protected int addStockQuantity;
     protected int subtractStockQuantity;
     protected int subtractBiggerThanStockQuantity;

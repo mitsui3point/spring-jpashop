@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OrderTestDataField {
+public class OrderTestDataField extends TestField {
     protected String member1Name;
     protected String book1Name;
     protected int book1StockQuantity;
@@ -61,6 +61,7 @@ public class OrderTestDataField {
      * https://itpro.tistory.com/117
      */
     protected ObjectMapper mapper;
+
     protected void init() {
         member1Name = "member1";
 

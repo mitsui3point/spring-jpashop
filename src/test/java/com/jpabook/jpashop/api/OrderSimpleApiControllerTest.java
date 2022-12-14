@@ -1,6 +1,5 @@
 package com.jpabook.jpashop.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Order;
