@@ -1,7 +1,6 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.OrderTestDataField;
-import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -172,16 +171,29 @@ public class OrderRepositoryTest extends OrderTestDataField {
         //given
         List<Order> expected = em.createQuery("select o from orders o", Order.class)
                 .getResultList();
-        expected.forEach(order -> {
-            order.getMember().getName();
-            order.getDelivery().getAddress();
-            order.getOrderItems().forEach(orderItem -> {
-                orderItem.getItem().getName();
-            });
-        });
+        orderObjectGraph(expected);
 
         //when
         List<Order> actual = orderRepository.findAllWithItem();
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    void 주문페이징_상품목록() {
+        //given
+        int offset = 1;
+        int limit = 100;
+        List<Order> expected = em.createQuery("select o from orders o", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+        orderObjectGraph(expected);
+
+        //when
+        List<Order> actual = orderRepository.findPagingWithItem(offset, limit);
 
         //then
         assertThat(actual).isEqualTo(expected);

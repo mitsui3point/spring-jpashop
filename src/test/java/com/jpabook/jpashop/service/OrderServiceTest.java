@@ -9,7 +9,6 @@ import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 import com.jpabook.jpashop.exception.NotEnoughItemStockException;
-import com.jpabook.jpashop.repository.OrderRepositoryTest;
 import com.jpabook.jpashop.repository.OrderSearch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -215,16 +214,28 @@ public class OrderServiceTest extends OrderTestDataField {
         //given
         List<Order> expected = em.createQuery("select o from orders o", Order.class)
                 .getResultList();
-        expected.forEach(order -> {
-            order.getMember().getName();
-            order.getDelivery().getAddress();
-            order.getOrderItems().forEach(orderItem -> {
-                orderItem.getItem().getName();
-            });
-        });
+        orderObjectGraph(expected);
 
         //when
-        List<Order> actual =orderService.findAllWithItem();
+        List<Order> actual = orderService.findAllWithItem();
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문페이징_상품_조회() {
+        //given
+        int offset = 1;
+        int limit = 100;
+        List<Order> expected = em.createQuery("select o from orders o", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+        orderObjectGraph(expected);
+
+        //when
+        List<Order> actual = orderService.findPagingWithItem(offset, limit);
 
         //then
         assertThat(actual).isEqualTo(expected);

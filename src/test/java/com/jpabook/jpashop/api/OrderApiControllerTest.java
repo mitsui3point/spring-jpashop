@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +32,7 @@ public class OrderApiControllerTest extends OrderTestDataField {
     private static final String ORDER_GET_V1_URL = BASE_URL + "/v1/orders";
     private static final String ORDER_GET_V2_URL = BASE_URL + "/v2/orders";
     private static final String ORDER_GET_V3_URL = BASE_URL + "/v3/orders";
+    private static final String ORDER_GET_V3_1_URL = BASE_URL + "/v3.1/orders";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -103,6 +103,36 @@ public class OrderApiControllerTest extends OrderTestDataField {
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V3_URL));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(expected));
+    }
+
+    @Test
+    void 주문목록_상세_조회_V3_1() throws Exception {
+        //given
+        int offset = 1;
+        int limit = 100;
+        List<OrderApiDto> expectedApiDtos = em.createQuery("select o from orders o ", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList()
+                .stream()
+                .map(order -> OrderApiDto.builder()
+                        .order(order)
+                        .build())
+                .collect(Collectors.toList());
+
+        String expected = mapper.writeValueAsString(expectedApiDtos);
+
+        //when
+        ResultActions perform = mvc.perform(
+                get(ORDER_GET_V3_1_URL)
+                        .queryParam("offset", String.valueOf(offset))
+                        .queryParam("limit", String.valueOf(limit))
+        );
 
         //then
         perform.andDo(print())

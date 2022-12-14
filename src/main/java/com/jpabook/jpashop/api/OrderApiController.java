@@ -1,12 +1,12 @@
 package com.jpabook.jpashop.api;
 
 import com.jpabook.jpashop.api.dto.order.OrderApiDto;
-import com.jpabook.jpashop.api.dto.order.OrderItemApiDto;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.repository.OrderSearch;
 import com.jpabook.jpashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -74,6 +74,23 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public List<OrderApiDto> ordersV3() {
         return orderService.findAllWithItem()
+                .stream()
+                .map(order -> OrderApiDto.builder()
+                        .order(order)
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * V3.1 엔티티를 조회해서 DTO로 변환 페이징 고려
+     * - ToOne 관계만 우선 모두 페치 조인으로 최적화
+     * - 컬렉션 관계는 hibernate.default_batch_fetch_size, @BatchSize로 최적화
+     */
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderApiDto> ordersV3_1(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                        @RequestParam(name = "limit", defaultValue = "0") int limit) {
+        return orderService.findPagingWithItem(offset, limit)
                 .stream()
                 .map(order -> OrderApiDto.builder()
                         .order(order)

@@ -28,7 +28,7 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
-//    @Transactional(readOnly = true)
+    //    @Transactional(readOnly = true)
     public List<Order> findAllByString(OrderSearch orderSearch) {
         //language=JPQL
         String jpql = "select o from orders o join o.member m";
@@ -91,8 +91,8 @@ public class OrderRepository {
 
     public List<Order> findAllWithMemberDelivery() {
         return em.createQuery("select o from orders o " +
-                "join fetch o.member m " +
-                "join fetch o.delivery d", Order.class)
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d", Order.class)
                 .getResultList();
     }
 
@@ -103,6 +103,15 @@ public class OrderRepository {
                         "join fetch o.orderItems oi " +
                         "join fetch oi.item i ", Order.class)
                 //.setFirstResult(1).setMaxResults(100)// WARN 14468 --- [nio-8080-exec-1] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+                .getResultList();
+    }
+
+    public List<Order> findPagingWithItem(int offset, int limit) {
+        return em.createQuery("select o from orders o " +
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
                 .getResultList();
     }
 }
