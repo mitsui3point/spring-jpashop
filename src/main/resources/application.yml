@@ -12,7 +12,7 @@ spring:
       hibernate:
 #        show_sql: true # Sysout 으로 로깅; 보통 운영에는 반영하지 않음
         format_sql: true
-#        default_batch_fetch_size: 1000 # 컬렉션 관계 join in 조회 사이즈
+        default_batch_fetch_size: 1000 # 컬렉션 관계 join in 조회 사이즈
 
 logging:
   level:

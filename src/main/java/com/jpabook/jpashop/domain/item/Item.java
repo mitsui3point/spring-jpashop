@@ -19,7 +19,6 @@ import java.util.List;
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@BatchSize(size = 100)
 public abstract class Item {
     @Id
     @GeneratedValue
