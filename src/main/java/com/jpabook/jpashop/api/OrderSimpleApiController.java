@@ -1,22 +1,15 @@
 package com.jpabook.jpashop.api;
 
-import com.jpabook.jpashop.domain.Address;
-import com.jpabook.jpashop.domain.Category;
+import com.jpabook.jpashop.api.dto.order.SimpleOrderDto;
 import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.domain.OrderItem;
-import com.jpabook.jpashop.domain.enums.OrderStatus;
 import com.jpabook.jpashop.repository.OrderSearch;
-import com.jpabook.jpashop.repository.simplequery.OrderSimpleQueryDto;
+import com.jpabook.jpashop.repository.simplequery.dto.OrderSimpleQueryDto;
 import com.jpabook.jpashop.repository.simplequery.OrderSimpleQueryService;
 import com.jpabook.jpashop.service.OrderService;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,17 +29,17 @@ public class OrderSimpleApiController {
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
         List<Order> orders = orderService.findAll(new OrderSearch());
-        for (Order order : orders) {
+        orders.forEach(order -> {
             order.getMember().getName();//lazy 강제 초기화
-            for (OrderItem orderItem : order.getOrderItems()) {
-                orderItem.getOrderPrice();//lazy 강제 초기화;
-                orderItem.getItem().getName();//lazy 강제 초기화
-                for (Category category : orderItem.getItem().getCategories()) {
-                    category.getName();//lazy 강제 초기화
-                }
-            }
             order.getDelivery().getDeliveryStatus();//lazy 강제 초기화
-        }
+            order.getOrderItems().forEach(orderItem -> {
+                orderItem.getOrderPrice();//lazy 강제 초기화
+                orderItem.getItem().getName();//lazy 강제 초기화
+                orderItem.getItem().getCategories().forEach(category -> {
+                    category.getName();//lazy 강제 초기화
+                });
+            });
+        });
         return orders;
     }
 
@@ -58,8 +51,8 @@ public class OrderSimpleApiController {
                 .stream()
                 .map(order ->
                         SimpleOrderDto.builder()
-                            .order(order)
-                            .build()
+                                .order(order)
+                                .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -79,23 +72,5 @@ public class OrderSimpleApiController {
     @GetMapping("/api/v4/simple-orders")
     public List<OrderSimpleQueryDto> ordersV4() {
         return orderSimpleQueryService.findOrderDtos();
-    }
-
-    @Getter
-    @NoArgsConstructor
-    static class SimpleOrderDto {
-        private Long orderId;
-        private String name;
-        private LocalDateTime orderDate;
-        private OrderStatus orderStatus;
-        private Address address;
-        @Builder
-        public SimpleOrderDto(Order order) {
-            this.orderId = order.getId();
-            this.name = order.getMember().getName();//lazy 초기화
-            this.orderDate = order.getOrderDate();
-            this.orderStatus = order.getStatus();
-            this.address = order.getDelivery().getAddress();//lazy 초기화
-        }
     }
 }

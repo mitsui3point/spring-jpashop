@@ -1,4 +1,4 @@
-package com.jpabook.jpashop.repository.simplequery;
+package com.jpabook.jpashop.repository.simplequery.dto;
 
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.enums.OrderStatus;

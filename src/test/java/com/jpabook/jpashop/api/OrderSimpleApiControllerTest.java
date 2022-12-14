@@ -2,6 +2,7 @@ package com.jpabook.jpashop.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
+import com.jpabook.jpashop.api.dto.order.SimpleOrderDto;
 import com.jpabook.jpashop.domain.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static com.jpabook.jpashop.api.OrderSimpleApiController.SimpleOrderDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;

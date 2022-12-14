@@ -1,5 +1,6 @@
 package com.jpabook.jpashop.api;
 
+import com.jpabook.jpashop.api.dto.member.*;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
 import lombok.Builder;
@@ -90,7 +91,7 @@ public class MemberApiController {
     @PostMapping("/v2/members")
     public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
         Member member = Member.builder()
-                .name(request.name)
+                .name(request.getName())
                 .build();
         Long id = memberService.join(member);
         return CreateMemberResponse.builder()
@@ -115,44 +116,44 @@ public class MemberApiController {
     /**
      * API parameter DTO(parameter)
      */
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    private static class CreateMemberResponse {
-        private Long id;
-
-        @Builder
-        private CreateMemberResponse(Long id) {
-            this.id = id;
-        }
-
-    }
+//    @Getter
+//    @NoArgsConstructor(access = PROTECTED)
+//    private static class CreateMemberResponse {
+//        private Long id;
+//
+//        @Builder
+//        private CreateMemberResponse(Long id) {
+//            this.id = id;
+//        }
+//
+//    }
 
     /**
      * API parameter DTO(return)
      */
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    private static class CreateMemberRequest {
-        @NotEmpty
-        private String name;
+//    @Getter
+//    @NoArgsConstructor(access = PROTECTED)
+//    private static class CreateMemberRequest {
+//        @NotEmpty
+//        private String name;
+//
+//        @Builder
+//        private CreateMemberRequest(String name) {
+//            this.name = name;
+//        }
+//    }
 
-        @Builder
-        private CreateMemberRequest(String name) {
-            this.name = name;
-        }
-    }
-
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    private static class UpdateMemberRequest {
-        @NotEmpty
-        private String name;
-
-        @Builder
-        private UpdateMemberRequest(String name) {
-            this.name = name;
-        }
-    }
+//    @Getter
+//    @NoArgsConstructor(access = PROTECTED)
+//    private static class UpdateMemberRequest {
+//        @NotEmpty
+//        private String name;
+//
+//        @Builder
+//        private UpdateMemberRequest(String name) {
+//            this.name = name;
+//        }
+//    }
 
     @Getter
     @NoArgsConstructor(access = PROTECTED)
@@ -167,27 +168,27 @@ public class MemberApiController {
         }
     }
 
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    public static class Results<T> {
-        private T data;
-        private int count;
+//    @Getter
+//    @NoArgsConstructor(access = PROTECTED)
+//    public static class Results<T> {
+//        private T data;
+//        private int count;
+//
+//        @Builder
+//        private Results(T data, int count) {
+//            this.data = data;
+//            this.count = count;
+//        }
+//    }
 
-        @Builder
-        private Results(T data, int count) {
-            this.data = data;
-            this.count = count;
-        }
-    }
-
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    public static class MemberDto {
-        private String name;
-
-        @Builder
-        private MemberDto(String name) {
-            this.name = name;
-        }
-    }
+//    @Getter
+//    @NoArgsConstructor(access = PROTECTED)
+//    public static class MemberDto {
+//        private String name;
+//
+//        @Builder
+//        private MemberDto(String name) {
+//            this.name = name;
+//        }
+//    }
 }

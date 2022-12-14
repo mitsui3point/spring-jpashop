@@ -2,6 +2,8 @@ package com.jpabook.jpashop.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jpabook.jpashop.api.dto.member.MemberDto;
+import com.jpabook.jpashop.api.dto.member.Results;
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
@@ -20,8 +22,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.jpabook.jpashop.api.MemberApiController.MemberDto;
-import static com.jpabook.jpashop.api.MemberApiController.Results;
 import static com.jpabook.jpashop.domain.constants.ExceptionMessage.ALREADY_EXISTS_NAME;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

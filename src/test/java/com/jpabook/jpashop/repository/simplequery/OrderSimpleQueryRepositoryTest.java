@@ -1,10 +1,9 @@
 package com.jpabook.jpashop.repository.simplequery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Order;
+import com.jpabook.jpashop.repository.simplequery.dto.OrderSimpleQueryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
