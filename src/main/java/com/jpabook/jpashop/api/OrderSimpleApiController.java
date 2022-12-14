@@ -33,11 +33,7 @@ public class OrderSimpleApiController {
             order.getMember().getName();//lazy 강제 초기화
             order.getDelivery().getDeliveryStatus();//lazy 강제 초기화
             order.getOrderItems().forEach(orderItem -> {
-                orderItem.getOrderPrice();//lazy 강제 초기화
                 orderItem.getItem().getName();//lazy 강제 초기화
-                orderItem.getItem().getCategories().forEach(category -> {
-                    category.getName();//lazy 강제 초기화
-                });
             });
         });
         return orders;

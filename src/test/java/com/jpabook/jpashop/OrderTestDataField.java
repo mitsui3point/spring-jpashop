@@ -8,7 +8,9 @@ import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OrderTestDataField extends TestField {
@@ -189,18 +191,14 @@ public class OrderTestDataField extends TestField {
         return book.getId();
     }
 
-    protected void initOrderObjectGraph(Order[] initOrders) {
-        for (Order initOrder : initOrders) {
-            initOrder.getMember().getName();
-            initOrder.getDelivery().getDeliveryStatus();
-            for (OrderItem orderItem : initOrder.getOrderItems()) {
-                orderItem.getOrderPrice();
+    protected void orderObjectGraph(List<Order> orders) {
+        orders.forEach(order -> {
+            order.getMember().getName();
+            order.getDelivery().getDeliveryStatus();
+            order.getOrderItems().forEach(orderItem -> {
                 orderItem.getItem().getName();
-                for (Category category : orderItem.getItem().getCategories()) {
-                    category.getName();
-                }
-            }
-        }
+            });
+        });
     }
 
     protected Map<String, Object> getHashMapOrderMemberDelivery(Order order) {

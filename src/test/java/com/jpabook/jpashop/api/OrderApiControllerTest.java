@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,19 +40,24 @@ public class OrderApiControllerTest extends OrderTestDataField {
     @Autowired
     private EntityManager em;
 
+    private List<Order> expectedOrders;
+
+    @BeforeEach
+    void setUp() {
+        init();
+        apiInit();
+    }
+
+    private void apiInit() {
+        expectedOrders = em.createQuery("select o from orders o ", Order.class)
+                .getResultList();
+    }
+
     @Test
     void 주문목록_상세_조회_V1() throws Exception {
         //given
-        List<Order> expected = em.createQuery("select o from orders o ", Order.class)
-                .getResultList();
-        expected.forEach(order -> {
-            order.getMember().getName();
-            order.getDelivery().getAddress();
-            order.getOrderItems().forEach(orderItem -> {
-                orderItem.getItem().getName();
-            });
-        });
-        String expectedJson = mapper.writeValueAsString(expected);
+        orderObjectGraph(expectedOrders);
+        String expected = mapper.writeValueAsString(expectedOrders);
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V1_URL));
@@ -57,21 +65,20 @@ public class OrderApiControllerTest extends OrderTestDataField {
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+                .andExpect(content().json(expected));
     }
 
     @Test
     void 주문목록_상세_조회_V2() throws Exception {
         //given
-        List<OrderApiDto> expected = em.createQuery("select o from orders o ", Order.class)
-                .getResultList()
+        List<OrderApiDto> expectedApiDtos = expectedOrders
                 .stream()
                 .map(order -> OrderApiDto.builder()
                         .order(order)
                         .build())
                 .collect(Collectors.toList());
 
-        String expectedJson = mapper.writeValueAsString(expected);
+        String expected = mapper.writeValueAsString(expectedApiDtos);
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V2_URL));
@@ -79,21 +86,20 @@ public class OrderApiControllerTest extends OrderTestDataField {
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+                .andExpect(content().json(expected));
     }
 
     @Test
     void 주문목록_상세_조회_V3() throws Exception {
         //given
-        List<OrderApiDto> expected = em.createQuery("select o from orders o ", Order.class)
-                .getResultList()
+        List<OrderApiDto> expectedApiDtos = expectedOrders
                 .stream()
                 .map(order -> OrderApiDto.builder()
                         .order(order)
                         .build())
                 .collect(Collectors.toList());
 
-        String expectedJson = mapper.writeValueAsString(expected);
+        String expected = mapper.writeValueAsString(expectedApiDtos);
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V3_URL));
@@ -101,6 +107,11 @@ public class OrderApiControllerTest extends OrderTestDataField {
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+                .andExpect(content().json(expected));
+    }
+
+    @AfterEach
+    void tearDown() {
+        em.flush();
     }
 }

@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,9 +40,9 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
     @Autowired
     private EntityManager em;
 
-    private Order[] initOrders;
+    private List<Order> orders;
 
-    private SimpleOrderDto[] simpleOrderDtos;
+    private List<SimpleOrderDto> simpleOrderDtos;
 
     @BeforeEach
     void setUp() {
@@ -51,7 +54,7 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
     @Test
     void 주문_전체조회_V1() throws Exception {
         //given
-        String expected = mapper.writeValueAsString(initOrders);
+        String expected = mapper.writeValueAsString(orders);
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V1_URL));
@@ -115,12 +118,12 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
     private void simpleApiInit() {
         String query = "select o from orders o ";
 
-        System.out.println("initOrders==================================");
-        initOrders = em.createQuery(query, Order.class)
-                .getResultList()
-                .toArray(Order[]::new);
-        initOrderObjectGraph(initOrders);
-        System.out.println("//initOrders==================================");
+        System.out.println("orders==================================");
+        orders = em.createQuery(query, Order.class)
+                .getResultList();
+//                .toArray(Order[]::new);
+        orderObjectGraph(orders);
+        System.out.println("//orders==================================");
 
         System.out.println("simpleOrderDtos==================================");
         simpleOrderDtos = em.createQuery(query, Order.class)
@@ -130,7 +133,8 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
                         .order(o)
                         .build()
                 )
-                .toArray(SimpleOrderDto[]::new);
+                .collect(Collectors.toList());
+//                .toArray(SimpleOrderDto[]::new);
         System.out.println("//simpleOrderDtos==================================");
     }
 }
