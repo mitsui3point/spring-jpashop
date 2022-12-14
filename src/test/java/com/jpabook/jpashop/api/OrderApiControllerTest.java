@@ -2,8 +2,8 @@ package com.jpabook.jpashop.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
+import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.domain.OrderItem;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,6 +29,7 @@ public class OrderApiControllerTest extends OrderTestDataField {
 
     private static final String BASE_URL = "/api";
     private static final String ORDER_GET_V1_URL = BASE_URL + "/v1/orders";
+    private static final String ORDER_GET_V2_URL = BASE_URL + "/v2/orders";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -51,6 +53,28 @@ public class OrderApiControllerTest extends OrderTestDataField {
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V1_URL));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void 주문목록_상세_조회_V2() throws Exception {
+        //given
+        List<OrderApiDto> expected = em.createQuery("select o from orders o ", Order.class)
+                .getResultList()
+                .stream()
+                .map(order -> OrderApiDto.builder()
+                        .order(order)
+                        .build())
+                .collect(Collectors.toList());
+
+        String expectedJson = mapper.writeValueAsString(expected);
+
+        //when
+        ResultActions perform = mvc.perform(get(ORDER_GET_V2_URL));
 
         //then
         perform.andDo(print())
