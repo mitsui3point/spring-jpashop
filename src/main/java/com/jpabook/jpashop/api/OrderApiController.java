@@ -3,7 +3,9 @@ package com.jpabook.jpashop.api;
 import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.repository.OrderSearch;
+import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import com.jpabook.jpashop.service.OrderService;
+import com.jpabook.jpashop.service.order.query.OrderQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,11 +29,16 @@ import java.util.stream.Collectors;
  * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
  * - 페이징 시에는 N 부분을 포기해야함
  * </p>
+ * <p>
+ * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
+ * - 페이징 가능
+ * </p>
  */
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
     private final OrderService orderService;
+    private final OrderQueryService orderQueryService;
 
     /**
      * V1. 엔티티 직접 노출
@@ -97,5 +104,14 @@ public class OrderApiController {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
+     * - 페이징 가능
+     */
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> ordersV4() {
+        return orderQueryService.findAllOneToNQuery();
     }
 }
