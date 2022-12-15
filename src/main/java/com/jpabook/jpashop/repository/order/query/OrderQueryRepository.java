@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.repository.order.query;
 
 import com.jpabook.jpashop.repository.OrderRepository;
+import com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderItemQueryDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import com.jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
@@ -38,7 +39,7 @@ public class OrderQueryRepository {
     public List<OrderQueryDto> findAllEachQuery() {
         List<OrderQueryDto> orders = findOrdersQuery();//query 1번 -> N 개
         orders.forEach(o -> {
-            o.setOrderItemQueryDtos(
+            o.setOrderItems(
                     findOrderItemsEachQuery(o.getOrderId())//query N번
             );
         });
@@ -58,7 +59,7 @@ public class OrderQueryRepository {
 
         //루프를 돌면서 컬렉션 추가(추가 쿼리 실행X)
         result.forEach(o -> {
-            o.setOrderItemQueryDtos(orderItemsInQuery.get(o.getOrderId()));
+            o.setOrderItems(orderItemsInQuery.get(o.getOrderId()));
         });
 
         return result;
@@ -119,5 +120,20 @@ public class OrderQueryRepository {
                 );
 
         return orderItemsGroupingByOrderId;
+    }
+
+    /**
+     * 1:N:M 관계 데이터 전체 조회
+     * 모든 관계된 테이블 1회 조회
+     */
+    public List<OrderFlatDto> findAllFlat() {
+        List<OrderFlatDto> flats = em.createQuery(
+                "select new com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +
+                        " from orders o" +
+                        " join o.member m" +
+                        " join o.delivery d" +
+                        " join o.orderItems oi" +
+                        " join oi.item i", OrderFlatDto.class).getResultList();
+        return flats;
     }
 }

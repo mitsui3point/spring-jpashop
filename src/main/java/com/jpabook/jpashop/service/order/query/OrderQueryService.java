@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.service.order.query;
 
 import com.jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,5 +21,9 @@ public class OrderQueryService {
 
     public List<OrderQueryDto> findAllInQuery() {
         return orderQueryRepository.findAllInQuery();
+    }
+
+    public List<OrderFlatDto> findAllFlat() {
+        return orderQueryRepository.findAllFlat();
     }
 }

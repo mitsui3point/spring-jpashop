@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
+import com.jpabook.jpashop.domain.OrderItem;
+import com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,7 @@ public class OrderApiControllerTest extends OrderTestDataField {
     private static final String ORDER_GET_V3_1_URL = BASE_URL + "/v3.1/orders";
     private static final String ORDER_GET_V4_URL = BASE_URL + "/v4/orders";
     private static final String ORDER_GET_V5_URL = BASE_URL + "/v5/orders";
+    private static final String ORDER_GET_V6_URL = BASE_URL + "/v6/orders";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -180,6 +185,28 @@ public class OrderApiControllerTest extends OrderTestDataField {
 
         //when
         ResultActions perform = mvc.perform(get(ORDER_GET_V5_URL));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(expected));
+    }
+
+    @Test
+    void 주문목록_상세_조회_V6() throws Exception {
+        //given
+        List<OrderQueryDto> expectedApiDtos = em.createQuery("select o from orders o ", Order.class)
+                .getResultList()
+                .stream()
+                .map(order -> OrderQueryDto.builder()
+                        .order(order)
+                        .build())
+                .collect(Collectors.toList());
+
+        String expected = mapper.writeValueAsString(expectedApiDtos);
+
+        //when
+        ResultActions perform = mvc.perform(get(ORDER_GET_V6_URL));
 
         //then
         perform.andDo(print())

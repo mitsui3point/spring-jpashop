@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Order;
+import com.jpabook.jpashop.domain.OrderItem;
+import com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +67,40 @@ public class OrderQueryServiceTest extends OrderTestDataField {
 
         //when
         List<OrderQueryDto> actualities = orderQueryService.findAllInQuery();
+        String actual = om.writeValueAsString(actualities);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문전체_DTO_컬렉션_FLAT_조회() throws JsonProcessingException {
+        //given
+        List<OrderFlatDto> expects = em.createQuery(
+                        "select o, oi from orders o join o.orderItems oi ", Object[].class)
+                .getResultList()
+                .stream()
+                .map(o -> OrderFlatDto
+                        .builder()
+                        .order(
+                                (Order) Arrays.stream(o)
+                                        .filter(obj -> obj instanceof Order)
+                                        .findAny()
+                                        .get()
+                        )
+                        .orderItem(
+                                (OrderItem) Arrays.stream(o)
+                                        .filter(obj -> obj instanceof OrderItem)
+                                        .findAny()
+                                        .get()
+                        )
+                        .build()
+                )
+                .collect(Collectors.toList());
+        String expected = om.writeValueAsString(expects);
+
+        //when
+        List<OrderFlatDto> actualities = orderQueryService.findAllFlat();
         String actual = om.writeValueAsString(actualities);
 
         //then

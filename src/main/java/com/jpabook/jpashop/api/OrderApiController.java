@@ -3,6 +3,8 @@ package com.jpabook.jpashop.api;
 import com.jpabook.jpashop.api.dto.order.OrderApiDto;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.repository.OrderSearch;
+import com.jpabook.jpashop.repository.order.query.dto.OrderFlatDto;
+import com.jpabook.jpashop.repository.order.query.dto.OrderItemQueryDto;
 import com.jpabook.jpashop.repository.order.query.dto.OrderQueryDto;
 import com.jpabook.jpashop.service.OrderService;
 import com.jpabook.jpashop.service.order.query.OrderQueryService;
@@ -12,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * <p>
@@ -75,7 +78,7 @@ public class OrderApiController {
                         .order(order)
                         .build()
                 )
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
@@ -90,7 +93,7 @@ public class OrderApiController {
                         .order(order)
                         .build()
                 )
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
@@ -107,7 +110,7 @@ public class OrderApiController {
                         .order(order)
                         .build()
                 )
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
@@ -127,4 +130,30 @@ public class OrderApiController {
     public List<OrderQueryDto> ordersV5() {
         return orderQueryService.findAllInQuery();
     }
+
+    /**
+     * V6. JPA에서 DTO로 바로 조회, 플랫 데이터(1Query) (1 Query)
+     * - 페이징 불가능..
+     */
+    @GetMapping("/api/v6/orders")
+    public List<OrderQueryDto> ordersV6() {
+        List<OrderFlatDto> flats = orderQueryService.findAllFlat();
+        return flats.stream()
+                .collect(
+                        groupingBy(
+                                o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getOrderStatus(), o.getAddress()),
+                                mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
+                        )
+                )
+                .entrySet()
+                .stream()
+                .map(e -> {
+                    OrderQueryDto key = e.getKey();
+                    return new OrderQueryDto(key.getOrderId(),
+                            key.getName(), key.getOrderDate(), key.getOrderStatus(),
+                            key.getAddress(), e.getValue());
+                })
+                .collect(toList());
+    }
+
 }
