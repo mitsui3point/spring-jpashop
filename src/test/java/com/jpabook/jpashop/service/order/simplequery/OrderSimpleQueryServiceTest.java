@@ -1,4 +1,4 @@
-package com.jpabook.jpashop.repository.order.simplequery;
+package com.jpabook.jpashop.service.order.simplequery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jpabook.jpashop.OrderTestDataField;
