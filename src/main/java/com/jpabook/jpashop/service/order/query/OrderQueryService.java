@@ -14,7 +14,11 @@ import java.util.List;
 public class OrderQueryService {
 
     private final OrderQueryRepository orderQueryRepository;
-    public List<OrderQueryDto> findAllOneToNQuery() {
-        return orderQueryRepository.findAllOneToNQuery();
+    public List<OrderQueryDto> findAllEachQuery() {
+        return orderQueryRepository.findAllEachQuery();
+    }
+
+    public List<OrderQueryDto> findAllInQuery() {
+        return orderQueryRepository.findAllInQuery();
     }
 }

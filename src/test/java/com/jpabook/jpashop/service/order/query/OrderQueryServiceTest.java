@@ -29,7 +29,7 @@ public class OrderQueryServiceTest extends OrderTestDataField {
     private ObjectMapper om;
 
     @Test
-    void 주문전체_DTO_컬렉션_N_조회() throws JsonProcessingException {
+    void 주문전체_DTO_컬렉션_EACH_조회() throws JsonProcessingException {
         //given
         List<OrderQueryDto> expects = em.createQuery("select o from orders o ", Order.class)
                 .getResultList()
@@ -42,8 +42,29 @@ public class OrderQueryServiceTest extends OrderTestDataField {
         String expected = om.writeValueAsString(expects);
 
         //when
-        List<OrderQueryDto> actuals = orderQueryService.findAllOneToNQuery();
-        String actual = om.writeValueAsString(actuals);
+        List<OrderQueryDto> actualities = orderQueryService.findAllEachQuery();
+        String actual = om.writeValueAsString(actualities);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문전체_DTO_컬렉션_IN_조회() throws JsonProcessingException {
+        //given
+        List<OrderQueryDto> expects = em.createQuery("select o from orders o ", Order.class)
+                .getResultList()
+                .stream()
+                .map(order -> OrderQueryDto.builder()
+                        .order(order)
+                        .build()
+                )
+                .collect(Collectors.toList());
+        String expected = om.writeValueAsString(expects);
+
+        //when
+        List<OrderQueryDto> actualities = orderQueryService.findAllInQuery();
+        String actual = om.writeValueAsString(actualities);
 
         //then
         assertThat(actual).isEqualTo(expected);

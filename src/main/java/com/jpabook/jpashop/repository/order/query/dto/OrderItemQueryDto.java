@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class OrderItemQueryDto {
-    @JsonIgnore
+//    @JsonIgnore
     private Long orderId;
     private String itemName;//상품 명
     private int orderPrice; //주문 가격

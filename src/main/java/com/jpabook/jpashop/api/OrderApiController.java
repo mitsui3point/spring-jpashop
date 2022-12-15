@@ -33,6 +33,10 @@ import java.util.stream.Collectors;
  * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
  * - 페이징 가능
  * </p>
+ * <p>
+ * V5. JPA에서 DTO로 바로 조회, 컬렉션 1 조회 최적화 버전 (1 + 1 Query)
+ * - 페이징 가능
+ * </p>
  */
 @RestController
 @RequiredArgsConstructor
@@ -112,6 +116,15 @@ public class OrderApiController {
      */
     @GetMapping("/api/v4/orders")
     public List<OrderQueryDto> ordersV4() {
-        return orderQueryService.findAllOneToNQuery();
+        return orderQueryService.findAllEachQuery();
+    }
+
+    /**
+     * V5. JPA에서 DTO로 바로 조회, 컬렉션 1 조회 최적화 버전 (1 + 1 Query)
+     * - 페이징 가능
+     */
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> ordersV5() {
+        return orderQueryService.findAllInQuery();
     }
 }

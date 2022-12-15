@@ -9,19 +9,21 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Repository 관심사 분리
- *      : Entity(핵심 비즈니스 로직) // 화면 혹은 API 로직
- *      : 큰 두덩이로 분리
- *      : 핵심 비즈니스 로직과, 화면 혹은 API 로직의 LifeCycle 이 다르기 때문에 관심사 분리가 필요함.
+ * : Entity(핵심 비즈니스 로직) // 화면 혹은 API 로직
+ * : 큰 두덩이로 분리
+ * : 핵심 비즈니스 로직과, 화면 혹은 API 로직의 LifeCycle 이 다르기 때문에 관심사 분리가 필요함.
  * {@link OrderRepository}
- *      : Order Entity 를 조회하기 위한 목적
- *      : 핵심 비즈니스 로직을 위한 Entity 를 조회할 때 주로 사용
+ * : Order Entity 를 조회하기 위한 목적
+ * : 핵심 비즈니스 로직을 위한 Entity 를 조회할 때 주로 사용
  * {@link OrderSimpleQueryRepository}, {@link OrderQueryRepository}
- *      : 화면 혹은 API 에 의존관계가 있는 로직들을 떼어서 모아둔 Repository
- *      : 특정 화면이나 API 에 fit 한 query 들을 분리함, 특정화면 혹은 API 조회할 때 주로 사용
- *      : 보통 화면에 종속적인 로직들이 쿼리와 밀접한 관련이 있을 경우가 많기 때문에, 이를 분리하면 유지보수 관리에 용이하다.
+ * : 화면 혹은 API 에 의존관계가 있는 로직들을 떼어서 모아둔 Repository
+ * : 특정 화면이나 API 에 fit 한 query 들을 분리함, 특정화면 혹은 API 조회할 때 주로 사용
+ * : 보통 화면에 종속적인 로직들이 쿼리와 밀접한 관련이 있을 경우가 많기 때문에, 이를 분리하면 유지보수 관리에 용이하다.
  */
 @Repository
 @RequiredArgsConstructor
@@ -33,14 +35,33 @@ public class OrderQueryRepository {
      * Query: 루트 1번, 컬렉션 N 번
      * 단건 조회에서 많이 사용하는 방식
      */
-    public List<OrderQueryDto> findAllOneToNQuery() {
+    public List<OrderQueryDto> findAllEachQuery() {
         List<OrderQueryDto> orders = findOrdersQuery();//query 1번 -> N 개
         orders.forEach(o -> {
             o.setOrderItemQueryDtos(
-                    findOrderItemsQuery(o.getOrderId())//query N번
+                    findOrderItemsEachQuery(o.getOrderId())//query N번
             );
         });
         return orders;
+    }
+
+    /**
+     * 최적화
+     * Query: 루트 1번, 컬렉션 1번
+     * 데이터를 한꺼번에 처리할 때 많이 사용하는 방식
+     */
+    public List<OrderQueryDto> findAllInQuery() {
+        List<OrderQueryDto> result = findOrdersQuery();//query 1번 -> N 개
+
+        //orderItem 컬렉션을 MAP 한방에 조회
+        Map<Long, List<OrderItemQueryDto>> orderItemsInQuery = findOrderItemsInQuery(getOrderIds(result));//query 1번 IN (N 개 key)
+
+        //루프를 돌면서 컬렉션 추가(추가 쿼리 실행X)
+        result.forEach(o -> {
+            o.setOrderItemQueryDtos(orderItemsInQuery.get(o.getOrderId()));
+        });
+
+        return result;
     }
 
     /**
@@ -58,7 +79,7 @@ public class OrderQueryRepository {
     /**
      * 1:N 관계인 orderItems 조회
      */
-    private List<OrderItemQueryDto> findOrderItemsQuery(Long orderId) {
+    private List<OrderItemQueryDto> findOrderItemsEachQuery(Long orderId) {
         List<OrderItemQueryDto> result = em.createQuery(
                         "select new com.jpabook.jpashop.repository.order.query.dto.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count)" +
                                 " from OrderItem oi" +
@@ -67,5 +88,36 @@ public class OrderQueryRepository {
                 .setParameter("id", orderId)
                 .getResultList();
         return result;
+    }
+
+    /**
+     * orderQueryDto List -> orderId List
+     */
+    private List<Long> getOrderIds(List<OrderQueryDto> orders) {
+        return orders.stream()
+                .map(o -> o.getOrderId())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 1:N 관계인 orderItems 조회
+     * N번 조회 -> IN 조회조건으로 collection Table 1회 조회
+     */
+    private Map<Long, List<OrderItemQueryDto>> findOrderItemsInQuery(List<Long> orderIds) {
+        List<OrderItemQueryDto> orderItems = em.createQuery(
+                        "select new com.jpabook.jpashop.repository.order.query.dto.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count)" +
+                                " from OrderItem oi" +
+                                " join oi.item i" +
+                                " where oi.order.id in :ids", OrderItemQueryDto.class)
+                .setParameter("ids", orderIds)
+                .getResultList();
+
+        Map<Long, List<OrderItemQueryDto>> orderItemsGroupingByOrderId = orderItems
+                .stream()
+                .collect(Collectors
+                        .groupingBy(OrderItemQueryDto::getOrderId)
+                );
+
+        return orderItemsGroupingByOrderId;
     }
 }
