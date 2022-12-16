@@ -1,5 +1,7 @@
 package com.jpabook.jpashop.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpabook.jpashop.OrderTestDataField;
 import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
@@ -25,6 +27,9 @@ public class OrderRepositoryTest extends OrderTestDataField {
     private OrderRepository orderRepository;
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private ObjectMapper om;
 
     @BeforeEach
     void setUp() {
@@ -182,21 +187,30 @@ public class OrderRepositoryTest extends OrderTestDataField {
 
     @Test
     @Transactional(readOnly = true)
-    void 주문페이징_상품목록() {
+    void 주문페이징_상품목록() throws JsonProcessingException {
         //given
-        int offset = 1;
+        int offset = 0;
         int limit = 100;
+        log.info("expected/=========================================");
         List<Order> expected = em.createQuery("select o from orders o", Order.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
         orderObjectGraph(expected);
+        String expectedValue = om.writeValueAsString(expected);
+        log.info("=========================================expected/");
 
         //when
+        log.info("actual/=========================================");
         List<Order> actual = orderRepository.findPagingWithItem(offset, limit);
+        String actualValue = om.writeValueAsString(actual);
+        log.info("=========================================actual/");
+        log.info("expectedValue:{}", expectedValue);
+        log.info("actualValue:{}", actualValue);
 
         //then
         assertThat(actual).isEqualTo(expected);
+        assertThat(actualValue).isEqualTo(expectedValue);
     }
 
     @AfterEach
