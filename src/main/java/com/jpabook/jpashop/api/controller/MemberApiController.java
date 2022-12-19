@@ -1,6 +1,7 @@
 package com.jpabook.jpashop.api.controller;
 
 import com.jpabook.jpashop.api.member.*;
+import com.jpabook.jpashop.api.service.query.MemberQueryService;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class MemberApiController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
 
     /**
      * 조회 V1: 응답 값으로 엔티티를 직접 외부에 노출한다.<br />
@@ -31,15 +33,15 @@ public class MemberApiController {
      * - 응답 스펙을 맞추기 위해 로직이 추가된다. (@JsonIgnore, 별도의 뷰 로직 등등)<br />
      * - 실무에서는 같은 엔티티에 대해 API가 용도에 따라 다양하게 만들어지는데, 한 엔티티에 각각의 API를 위한 프레젠테이션 응답 로직을 담기는 어렵다.<br />
      * - 엔티티가 변경되면 API 스펙이 변한다.<br />
-     * - 추가로 컬렉션을 직접 반환하면 항후 API 스펙을 변경하기 어렵다.(별도의 Result 클래스 생성으로 해결)<br />
+     * - 추가로 컬렉션을 직접 반환하면 항후 API 스펙을 변경하기 어렵다.(별도의 Result 클래스 생성으로 해결)<p />
      * 결론<br />
-     * - API 응답 스펙에 맞추어 별도의 DTO를 반환한다.<br /><br />
+     * - API 응답 스펙에 맞추어 별도의 DTO를 반환한다.<p />
      * 조회 V1: 안 좋은 버전, 모든 엔티티가 노출, @JsonIgnore -> 이건 정말 최악,<br />
      * api가 이거 하나인가! 화면에 종속적이지 마라!<br />
      */
     @GetMapping("/v1/members")
     public List<Member> getMembersV1() {
-        return memberService.findAll();
+        return memberQueryService.getMembersV1();
     }
 
     /**
@@ -48,17 +50,7 @@ public class MemberApiController {
      */
     @GetMapping("/v2/members")
     public Results getMembersV2() {
-        List<MemberDto> data = memberService.findAll()
-                .stream()
-                .map(member -> MemberDto
-                        .builder()
-                        .name(member.getName())
-                        .build())
-                .collect(Collectors.toList());
-        return Results.builder()
-                .data(data)
-                .count(data.size())
-                .build();
+        return memberQueryService.getMembersV2();
     }
 
     /**
@@ -73,10 +65,7 @@ public class MemberApiController {
      */
     @PostMapping("/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
-        Long id = memberService.join(member);
-        return CreateMemberResponse.builder()
-                .id(id)
-                .build();
+        return memberQueryService.saveMemberV1(member);
     }
 
     /**
@@ -84,13 +73,7 @@ public class MemberApiController {
      */
     @PostMapping("/v2/members")
     public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
-        Member member = Member.builder()
-                .name(request.getName())
-                .build();
-        Long id = memberService.join(member);
-        return CreateMemberResponse.builder()
-                .id(id)
-                .build();
+        return memberQueryService.saveMemberV2(request);
     }
 
     @PatchMapping("/v2/members/{id}")//부분수정 Patch, 전체수정 Put
@@ -98,12 +81,6 @@ public class MemberApiController {
             @PathVariable Long id,
             @RequestBody @Valid UpdateMemberRequest request) {
 
-        memberService.updateName(id, request.getName());
-        Member member = memberService.findOne(id);
-
-        return UpdateMemberResponse.builder()
-                .id(member.getId())
-                .name(member.getName())
-                .build();
+        return memberQueryService.updateMemberV2(id, request);
     }
 }

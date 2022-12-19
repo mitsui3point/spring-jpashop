@@ -67,32 +67,102 @@ public class MemberApiControllerTest {
 
     @Test
     void 회원_가입_V1() throws Exception {
-        memberJoin(MEMBER_JOIN_V1_URL);
+        //given
+
+        //when
+        String body = mapper.writeValueAsString(member);
+        ResultActions perform = mvc.perform(post(MEMBER_JOIN_V1_URL)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        Long expectedId = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", member.getName())
+                .getSingleResult()
+                .getId();
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(expectedId));
     }
 
     @Test
     void 회원_가입_V2() throws Exception {
-        memberJoin(MEMBER_JOIN_V2_URL);
+        //given
+
+        //when
+        String body = mapper.writeValueAsString(member);
+        ResultActions perform = mvc.perform(post(MEMBER_JOIN_V2_URL)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        Long expectedId = em.createQuery("select m from Member m where m.name = :name", Member.class)
+                .setParameter("name", member.getName())
+                .getSingleResult()
+                .getId();
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(expectedId));
     }
 
     @Test
     void 회원_가입_이름_중복_V1() throws JsonProcessingException {
-        memberJoinDuplicateName(MEMBER_JOIN_V1_URL);
+        //when
+        String duplicateNameBody = mapper.writeValueAsString(member);
+        memberService.join(member);
+
+        //then
+        Assertions.assertThatThrownBy(() -> {
+            mvc.perform(post(MEMBER_JOIN_V1_URL)
+                    .content(duplicateNameBody)
+                    .contentType(MediaType.APPLICATION_JSON)
+            );
+        }).hasCause(new IllegalStateException(ALREADY_EXISTS_NAME.getMessage()));
     }
 
     @Test
     void 회원_가입_이름_중복_V2() throws JsonProcessingException {
-        memberJoinDuplicateName(MEMBER_JOIN_V2_URL);
+        //when
+        String duplicateNameBody = mapper.writeValueAsString(member);
+        memberService.join(member);
+
+        //then
+        Assertions.assertThatThrownBy(() -> {
+            mvc.perform(post(MEMBER_JOIN_V2_URL)
+                    .content(duplicateNameBody)
+                    .contentType(MediaType.APPLICATION_JSON)
+            );
+        }).hasCause(new IllegalStateException(ALREADY_EXISTS_NAME.getMessage()));
     }
 
     @Test
     void 회원_가입_이름_누락_V1() throws Exception {
-        memberJoinNoName(MEMBER_JOIN_V1_URL);
+        //when
+        String noNameBody = mapper.writeValueAsString(noNameMember);
+        ResultActions performNoName = mvc.perform(post(MEMBER_JOIN_V1_URL)
+                .content(noNameBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        performNoName.andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void 회원_가입_이름_누락_V2() throws Exception {
-        memberJoinNoName(MEMBER_JOIN_V2_URL);
+        //when
+        String noNameBody = mapper.writeValueAsString(noNameMember);
+        ResultActions performNoName = mvc.perform(post(MEMBER_JOIN_V2_URL)
+                .content(noNameBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        performNoName.andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -179,54 +249,6 @@ public class MemberApiControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(mapper.writeValueAsString(expected)));
 
-    }
-
-    private void memberJoin(String url) throws Exception {
-        //given
-
-        //when
-        String body = mapper.writeValueAsString(member);
-        ResultActions perform = mvc.perform(post(url)
-                .content(body)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-        Long expectedId = em.createQuery("select m from Member m where m.name = :name", Member.class)
-                .setParameter("name", member.getName())
-                .getSingleResult()
-                .getId();
-
-        //then
-        perform.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedId));
-//                .andExpect(content().json(expectJson));
-    }
-
-    private void memberJoinDuplicateName(String url) throws JsonProcessingException {
-        //when
-        String duplicateNameBody = mapper.writeValueAsString(member);
-        memberService.join(member);
-
-        //then
-        Assertions.assertThatThrownBy(() -> {
-            mvc.perform(post(url)
-                    .content(duplicateNameBody)
-                    .contentType(MediaType.APPLICATION_JSON)
-            );
-        }).hasCause(new IllegalStateException(ALREADY_EXISTS_NAME.getMessage()));
-    }
-
-    private void memberJoinNoName(String url) throws Exception {
-        //when
-        String noNameBody = mapper.writeValueAsString(noNameMember);
-        ResultActions performNoName = mvc.perform(post(url)
-                .content(noNameBody)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        //then
-        performNoName.andDo(print())
-                .andExpect(status().isBadRequest());
     }
 
     @AfterEach

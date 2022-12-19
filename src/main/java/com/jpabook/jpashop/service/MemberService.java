@@ -48,12 +48,4 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    /**
-     * 회원 이름 수정
-     */
-    @Transactional
-    public void updateName(Long id, String updateName) {
-        Member member = memberRepository.findOne(id);
-        member.changeName(updateName);
-    }
 }

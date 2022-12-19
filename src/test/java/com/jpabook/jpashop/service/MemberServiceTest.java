@@ -72,21 +72,6 @@ public class MemberServiceTest extends MemberTestDataField {
         assertThat(actual).containsExactly(expected.toArray(Member[]::new));
     }
 
-    @Test
-    void 회원이름수정() {
-        //given
-        String expectedName = "changeMemberName";
-        Long memberId = memberService.join(memberA);
-
-        //when
-        memberService.updateName(memberId, expectedName);
-        String actualName = memberService.findOne(memberId)
-                .getName();
-
-        //then
-        assertThat(actualName).isEqualTo(expectedName);
-    }
-
     @AfterEach
     void tearDown() {
         em.flush(); //PersistenceContext 변경사항 DB에 반영
