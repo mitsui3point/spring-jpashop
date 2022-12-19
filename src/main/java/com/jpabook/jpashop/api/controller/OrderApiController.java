@@ -1,13 +1,13 @@
 package com.jpabook.jpashop.api.controller;
 
 import com.jpabook.jpashop.api.order.OrderApiDto;
-import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.repository.OrderSearch;
 import com.jpabook.jpashop.api.repository.query.dto.OrderFlatDto;
 import com.jpabook.jpashop.api.repository.query.dto.OrderItemQueryDto;
 import com.jpabook.jpashop.api.repository.query.dto.OrderQueryDto;
-import com.jpabook.jpashop.service.OrderService;
+import com.jpabook.jpashop.api.service.osiv.OrderOpenInViewService;
 import com.jpabook.jpashop.api.service.query.OrderQueryService;
+import com.jpabook.jpashop.domain.Order;
+import com.jpabook.jpashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,7 +44,7 @@ import static java.util.stream.Collectors.*;
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
-    private final OrderService orderService;
+    private final OrderOpenInViewService orderOpenInViewService;
     private final OrderQueryService orderQueryService;
 
     /**
@@ -54,16 +54,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v1/orders")
     public List<Order> ordersV1() {
-        List<Order> orders = orderService.findAll(new OrderSearch());
-        orders.forEach(order -> {
-            order.getMember().getName();
-            order.getDelivery().getAddress();
-            order.getOrderItems()
-                    .forEach(orderItem -> {
-                        orderItem.getItem().getName();
-                    });
-        });
-        return orders;
+        return orderOpenInViewService.ordersV1();
     }
 
     /**
@@ -72,13 +63,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v2/orders")
     public List<OrderApiDto> ordersV2() {
-        return orderService.findAll(new OrderSearch())
-                .stream()
-                .map(order -> OrderApiDto.builder()
-                        .order(order)
-                        .build()
-                )
-                .collect(toList());
+        return orderOpenInViewService.ordersV2();
     }
 
     /**
@@ -87,13 +72,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v3/orders")
     public List<OrderApiDto> ordersV3() {
-        return orderService.findAllWithItem()
-                .stream()
-                .map(order -> OrderApiDto.builder()
-                        .order(order)
-                        .build()
-                )
-                .collect(toList());
+        return orderOpenInViewService.ordersV3();
     }
 
     /**
@@ -104,13 +83,7 @@ public class OrderApiController {
     @GetMapping("/api/v3.1/orders")
     public List<OrderApiDto> ordersV3_1(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                         @RequestParam(name = "limit", defaultValue = "0") int limit) {
-        return orderService.findPagingWithItem(offset, limit)
-                .stream()
-                .map(order -> OrderApiDto.builder()
-                        .order(order)
-                        .build()
-                )
-                .collect(toList());
+        return orderOpenInViewService.ordersV3_1(offset, limit);
     }
 
     /**
@@ -137,23 +110,7 @@ public class OrderApiController {
      */
     @GetMapping("/api/v6/orders")
     public List<OrderQueryDto> ordersV6() {
-        List<OrderFlatDto> flats = orderQueryService.findAllFlat();
-        return flats.stream()
-                .collect(
-                        groupingBy(
-                                o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getOrderStatus(), o.getAddress()),
-                                mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
-                        )
-                )
-                .entrySet()
-                .stream()
-                .map(e -> {
-                    OrderQueryDto key = e.getKey();
-                    return new OrderQueryDto(key.getOrderId(),
-                            key.getName(), key.getOrderDate(), key.getOrderStatus(),
-                            key.getAddress(), e.getValue());
-                })
-                .collect(toList());
+        return orderQueryService.findAllFlatApiV6();
     }
 
 }

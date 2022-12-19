@@ -190,57 +190,6 @@ public class OrderServiceTest extends OrderTestDataField {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void 주문전체_회원_배송_조회() {
-        //given
-        List<Map> expected = em.createQuery("select o from orders o", Order.class)
-                .getResultList()
-                .stream()
-                .map(this::getHashMapOrderMemberDelivery)
-                .collect(Collectors.toList());
-
-        //when
-        List<Map> actual = orderService.findAllWithMemberDelivery()
-                .stream()
-                .map(this::getHashMapOrderMemberDelivery)
-                .collect(Collectors.toList());
-
-        //then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void 주문전체_상품_조회() {
-        //given
-        List<Order> expected = em.createQuery("select o from orders o", Order.class)
-                .getResultList();
-        orderObjectGraph(expected);
-
-        //when
-        List<Order> actual = orderService.findAllWithItem();
-
-        //then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void 주문페이징_상품_조회() {
-        //given
-        int offset = 1;
-        int limit = 100;
-        List<Order> expected = em.createQuery("select o from orders o", Order.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
-                .getResultList();
-        orderObjectGraph(expected);
-
-        //when
-        List<Order> actual = orderService.findPagingWithItem(offset, limit);
-
-        //then
-        assertThat(actual).isEqualTo(expected);
-    }
-
     @AfterEach
     void tearDown() {
         em.flush();

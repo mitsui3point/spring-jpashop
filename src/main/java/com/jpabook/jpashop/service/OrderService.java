@@ -72,16 +72,4 @@ public class OrderService {
     public List<Order> findAll(OrderSearch orderSearch) {
         return orderRepository.findAllByString(orderSearch);
     }
-
-    public List<Order> findAllWithMemberDelivery() {
-        return orderRepository.findAllWithMemberDelivery();
-    }
-
-    public List<Order> findAllWithItem() {
-        return orderRepository.findAllWithItem();
-    }
-
-    public List<Order> findPagingWithItem(int offset, int limit) {
-        return orderRepository.findPagingWithItem(offset, limit);
-    }
 }

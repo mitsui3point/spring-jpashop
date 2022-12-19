@@ -22,20 +22,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class OrderSimpleApiController {
-    private final OrderService orderService;
     private final OrderSimpleOpenInViewService orderSimpleOpenInViewService;
     private final OrderSimpleQueryService orderSimpleQueryService;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
-//        List<Order> orders = orderService.findAll(new OrderSearch());
-//        orders.forEach(order -> {
-//            order.getMember().getName();//lazy 강제 초기화
-//            order.getDelivery().getDeliveryStatus();//lazy 강제 초기화
-//            order.getOrderItems().forEach(orderItem -> {
-//                orderItem.getItem().getName();//lazy 강제 초기화
-//            });
-//        });
         return orderSimpleOpenInViewService.ordersV1();
     }
 
@@ -43,27 +34,11 @@ public class OrderSimpleApiController {
     public List<SimpleOrderDto> ordersV2() {
         //ORDER 2개
         //N + 1 -> 1 + 회원 N + 배송 N
-//        return orderService.findAll(new OrderSearch())
-//                .stream()
-//                .map(order ->
-//                        SimpleOrderDto.builder()
-//                                .order(order)
-//                                .build()
-//                )
-//                .collect(Collectors.toList());
         return orderSimpleOpenInViewService.ordersV2();
     }
 
     @GetMapping("/api/v3/simple-orders")
     public List<SimpleOrderDto> ordersV3() {
-//        return orderService.findAllWithMemberDelivery()
-//                .stream()
-//                .map(order ->
-//                        SimpleOrderDto.builder()
-//                                .order(order)
-//                                .build()
-//                )
-//                .collect(Collectors.toList());
         return orderSimpleOpenInViewService.ordersV3();
     }
 
