@@ -1,7 +1,7 @@
 package com.jpabook.jpashop.api.controller;
 
 import com.jpabook.jpashop.api.member.*;
-import com.jpabook.jpashop.api.service.query.MemberQueryService;
+import com.jpabook.jpashop.api.service.osiv.MemberOpenInViewService;
 import com.jpabook.jpashop.domain.Member;
 import com.jpabook.jpashop.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * MemberApiController
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class MemberApiController {
 
     private final MemberService memberService;
-    private final MemberQueryService memberQueryService;
+    private final MemberOpenInViewService memberOpenInViewService;
 
     /**
      * 조회 V1: 응답 값으로 엔티티를 직접 외부에 노출한다.<br />
@@ -41,7 +40,7 @@ public class MemberApiController {
      */
     @GetMapping("/v1/members")
     public List<Member> getMembersV1() {
-        return memberQueryService.getMembersV1();
+        return memberOpenInViewService.getMembersV1();
     }
 
     /**
@@ -50,7 +49,7 @@ public class MemberApiController {
      */
     @GetMapping("/v2/members")
     public Results getMembersV2() {
-        return memberQueryService.getMembersV2();
+        return memberOpenInViewService.getMembersV2();
     }
 
     /**
@@ -65,7 +64,7 @@ public class MemberApiController {
      */
     @PostMapping("/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
-        return memberQueryService.saveMemberV1(member);
+        return memberOpenInViewService.saveMemberV1(member);
     }
 
     /**
@@ -73,7 +72,7 @@ public class MemberApiController {
      */
     @PostMapping("/v2/members")
     public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
-        return memberQueryService.saveMemberV2(request);
+        return memberOpenInViewService.saveMemberV2(request);
     }
 
     @PatchMapping("/v2/members/{id}")//부분수정 Patch, 전체수정 Put
@@ -81,6 +80,6 @@ public class MemberApiController {
             @PathVariable Long id,
             @RequestBody @Valid UpdateMemberRequest request) {
 
-        return memberQueryService.updateMemberV2(id, request);
+        return memberOpenInViewService.updateMemberV2(id, request);
     }
 }

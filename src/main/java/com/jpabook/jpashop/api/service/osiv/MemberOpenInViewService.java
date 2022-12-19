@@ -1,4 +1,4 @@
-package com.jpabook.jpashop.api.service.query;
+package com.jpabook.jpashop.api.service.osiv;
 
 import com.jpabook.jpashop.api.member.*;
 import com.jpabook.jpashop.domain.Member;
@@ -28,7 +28,7 @@ import static com.jpabook.jpashop.domain.constants.ExceptionMessage.ALREADY_EXIS
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Validated
-public class MemberQueryService {
+public class MemberOpenInViewService {
 
     private final MemberRepository memberRepository;
 

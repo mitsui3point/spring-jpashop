@@ -1,4 +1,4 @@
-package com.jpabook.jpashop.api.service.query;
+package com.jpabook.jpashop.api.service.osiv;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 @Transactional
-public class MemberQueryServiceTest extends MemberTestDataField {
+public class MemberOpenInViewServiceTest extends MemberTestDataField {
     @Autowired
-    private MemberQueryService memberQueryService;
+    private MemberOpenInViewService memberOpenInViewService;
     @Autowired
     private EntityManager em;
     @Autowired
@@ -38,7 +38,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     @Test
     void 회원_가입_V1() throws JsonProcessingException {
         //when
-        CreateMemberResponse apiResponse = memberQueryService.saveMemberV1(member);
+        CreateMemberResponse apiResponse = memberOpenInViewService.saveMemberV1(member);
         String expected = mapper.writeValueAsString(member);
 
         String actual = mapper.writeValueAsString(em.find(Member.class, apiResponse.getId()));
@@ -53,7 +53,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
         CreateMemberRequest apiRequest = CreateMemberRequest.builder()
                 .name(member.getName())
                 .build();
-        CreateMemberResponse apiResponse = memberQueryService.saveMemberV2(apiRequest);
+        CreateMemberResponse apiResponse = memberOpenInViewService.saveMemberV2(apiRequest);
         String expected = member.getName();
 
         String actual = em.find(Member.class, apiResponse.getId()).getName();
@@ -65,26 +65,26 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     @Test
     void 회원_가입_이름_중복_V1() {
         //given
-        memberQueryService.saveMemberV1(member);
+        memberOpenInViewService.saveMemberV1(member);
 
         //then
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
             //when
-            memberQueryService.saveMemberV1(member);
+            memberOpenInViewService.saveMemberV1(member);
         }).withMessageContaining(ALREADY_EXISTS_NAME.getMessage());
     }
 
     @Test
     void 회원_가입_이름_중복_V2() {
         //given
-        memberQueryService.saveMemberV2(CreateMemberRequest.builder()
+        memberOpenInViewService.saveMemberV2(CreateMemberRequest.builder()
                 .name(member.getName())
                 .build());
 
         //then
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
             //when
-            memberQueryService.saveMemberV2(CreateMemberRequest.builder()
+            memberOpenInViewService.saveMemberV2(CreateMemberRequest.builder()
                     .name(member.getName())
                     .build());
         }).withMessageContaining(ALREADY_EXISTS_NAME.getMessage());
@@ -94,7 +94,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     void 회원_가입_이름_누락_V1() {
         //when
         assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> {
-            memberQueryService.saveMemberV1(noNameMember);
+            memberOpenInViewService.saveMemberV1(noNameMember);
         });
     }
 
@@ -102,7 +102,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     void 회원_가입_이름_누락_V2() {
         //when
         assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> {
-            memberQueryService.saveMemberV2(
+            memberOpenInViewService.saveMemberV2(
                     CreateMemberRequest.builder()
                             .name(noNameMember.getName())
                             .build());
@@ -112,7 +112,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     @Test
     void 회원_수정_이름_V2() {
         //given
-        Long id = memberQueryService.saveMemberV2(
+        Long id = memberOpenInViewService.saveMemberV2(
                         CreateMemberRequest.builder()
                                 .name("name")
                                 .build())
@@ -124,7 +124,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
                 .build();
 
         //when
-        UpdateMemberResponse response = memberQueryService.updateMemberV2(id, request);
+        UpdateMemberResponse response = memberOpenInViewService.updateMemberV2(id, request);
         String actual = response.getName();
 
         //then
@@ -135,7 +135,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
     @Test
     void 회원_수정_이름_누락_V2() {
         //given
-        Long id = memberQueryService.saveMemberV2(
+        Long id = memberOpenInViewService.saveMemberV2(
                         CreateMemberRequest.builder()
                                 .name("name")
                                 .build())
@@ -149,7 +149,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
         //then
         assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> {
             //when
-            UpdateMemberResponse response = memberQueryService.updateMemberV2(id, request);
+            UpdateMemberResponse response = memberOpenInViewService.updateMemberV2(id, request);
         });
     }
 
@@ -159,7 +159,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
         //given
         List<Member> expected = em.createQuery("select m from Member m", Member.class).getResultList();
         //when
-        List<Member> actual = memberQueryService.getMembersV1();
+        List<Member> actual = memberOpenInViewService.getMembersV1();
         //then
         assertThat(actual).isEqualTo(expected);
     }
@@ -182,7 +182,7 @@ public class MemberQueryServiceTest extends MemberTestDataField {
                 .build();
         String expectedJson = mapper.writeValueAsString(expected);
         //when
-        Results actual = memberQueryService.getMembersV2();
+        Results actual = memberOpenInViewService.getMembersV2();
         String actualJson = mapper.writeValueAsString(actual);
         //then
         assertThat(actualJson).isEqualTo(expectedJson);
