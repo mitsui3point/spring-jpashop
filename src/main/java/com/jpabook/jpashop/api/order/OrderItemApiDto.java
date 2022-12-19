@@ -3,7 +3,6 @@ package com.jpabook.jpashop.api.order;
 import com.jpabook.jpashop.domain.OrderItem;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class OrderItemApiDto {

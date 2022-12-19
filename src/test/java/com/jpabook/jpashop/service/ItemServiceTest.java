@@ -1,10 +1,7 @@
 package com.jpabook.jpashop.service;
 
 import com.jpabook.jpashop.ItemTestDataField;
-import com.jpabook.jpashop.domain.item.Album;
-import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
-import com.jpabook.jpashop.domain.item.Movie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

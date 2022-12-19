@@ -1,11 +1,10 @@
 package com.jpabook.jpashop.api.controller;
 
 import com.jpabook.jpashop.api.order.SimpleOrderDto;
-import com.jpabook.jpashop.api.service.osiv.OrderSimpleOpenInViewService;
-import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.api.repository.simplequery.dto.OrderSimpleQueryDto;
+import com.jpabook.jpashop.api.service.osiv.OrderSimpleOpenInViewService;
 import com.jpabook.jpashop.api.service.simplequery.OrderSimpleQueryService;
-import com.jpabook.jpashop.service.OrderService;
+import com.jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

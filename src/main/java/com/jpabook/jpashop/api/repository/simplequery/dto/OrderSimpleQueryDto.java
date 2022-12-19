@@ -2,7 +2,6 @@ package com.jpabook.jpashop.api.repository.simplequery.dto;
 
 import com.jpabook.jpashop.domain.Address;
 import com.jpabook.jpashop.domain.enums.OrderStatus;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,21 +1,16 @@
 package com.jpabook.jpashop.api.controller;
 
 import com.jpabook.jpashop.api.order.OrderApiDto;
-import com.jpabook.jpashop.api.repository.query.dto.OrderFlatDto;
-import com.jpabook.jpashop.api.repository.query.dto.OrderItemQueryDto;
 import com.jpabook.jpashop.api.repository.query.dto.OrderQueryDto;
 import com.jpabook.jpashop.api.service.osiv.OrderOpenInViewService;
 import com.jpabook.jpashop.api.service.query.OrderQueryService;
 import com.jpabook.jpashop.domain.Order;
-import com.jpabook.jpashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.*;
 
 /**
  * <p>

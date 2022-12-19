@@ -1,20 +1,15 @@
 package com.jpabook.jpashop.repository;
 
 import com.jpabook.jpashop.ItemTestDataField;
-import com.jpabook.jpashop.domain.item.Album;
-import com.jpabook.jpashop.domain.item.Book;
 import com.jpabook.jpashop.domain.item.Item;
-import com.jpabook.jpashop.domain.item.Movie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.jpabook.jpashop.api.repository.query.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jpabook.jpashop.domain.OrderItem;
 import lombok.Builder;
 import lombok.Getter;

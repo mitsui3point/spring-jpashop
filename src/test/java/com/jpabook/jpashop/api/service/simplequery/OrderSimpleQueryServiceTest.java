@@ -2,8 +2,8 @@ package com.jpabook.jpashop.api.service.simplequery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jpabook.jpashop.OrderTestDataField;
-import com.jpabook.jpashop.domain.Order;
 import com.jpabook.jpashop.api.repository.simplequery.dto.OrderSimpleQueryDto;
+import com.jpabook.jpashop.domain.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
