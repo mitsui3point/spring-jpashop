@@ -121,7 +121,6 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
         System.out.println("orders==================================");
         orders = em.createQuery(query, Order.class)
                 .getResultList();
-//                .toArray(Order[]::new);
         orderObjectGraph(orders);
         System.out.println("//orders==================================");
 
@@ -134,7 +133,6 @@ class OrderSimpleApiControllerTest extends OrderTestDataField {
                         .build()
                 )
                 .collect(Collectors.toList());
-//                .toArray(SimpleOrderDto[]::new);
         System.out.println("//simpleOrderDtos==================================");
     }
 }
