@@ -31,6 +31,9 @@ public class OrderRepositoryTest extends OrderTestDataField {
     @Autowired
     private ObjectMapper om;
 
+    private Order order;
+    private Order order2;
+
     @BeforeEach
     void setUp() {
         init();
@@ -39,7 +42,7 @@ public class OrderRepositoryTest extends OrderTestDataField {
     @Test
     void 주문_데이터_저장() {
         //given
-        Order order = Order.builder()
+        order = Order.builder()
                 .member(member1)
                 .delivery(delivery1)
                 .orderItems(orderItems1)
@@ -59,15 +62,16 @@ public class OrderRepositoryTest extends OrderTestDataField {
     @Test
     void 주문_데이터_취소() {
         //given
-        Order order = Order.builder()
-                .member(member1)
-                .delivery(delivery1)
-                .orderItems(orderItems1)
-                .build();
-        em.persist(member1);
-        em.persist(book1);
-        em.persist(book2);
-        orderRepository.save(order);
+        saveTestOrders();
+//        order = Order.builder()
+//                .member(member1)
+//                .delivery(delivery1)
+//                .orderItems(orderItems1)
+//                .build();
+//        em.persist(member1);
+//        em.persist(book1);
+//        em.persist(book2);
+//        orderRepository.save(order);
         OrderStatus expected = OrderStatus.CANCEL;
 
         //when
@@ -82,28 +86,9 @@ public class OrderRepositoryTest extends OrderTestDataField {
     }
 
     @Test
-    void 주문_전체_조회() {
+    void 주문_전체_조회_JPQL() {
         //given
-
-        Order order = Order.builder()
-                .member(member1)
-                .delivery(delivery1)
-                .orderItems(orderItems1)
-                .build();
-        em.persist(member1);
-        em.persist(book1);
-        em.persist(book2);
-        orderRepository.save(order);
-
-        Order order2 = Order.builder()
-                .member(member2)
-                .delivery(delivery2)
-                .orderItems(orderItems2)
-                .build();
-        em.persist(member2);
-        em.persist(book3);
-        em.persist(book4);
-        orderRepository.save(order2);
+        saveTestOrders();
 
         OrderSearch orderSearch = new OrderSearch();
         orderSearch.setMemberName(member2.getName());
@@ -119,25 +104,7 @@ public class OrderRepositoryTest extends OrderTestDataField {
     @Test
     void 주문_전체_조회_criteria() {
         //given
-        Order order = Order.builder()
-                .member(member1)
-                .delivery(delivery1)
-                .orderItems(orderItems1)
-                .build();
-        em.persist(member1);
-        em.persist(book1);
-        em.persist(book2);
-        orderRepository.save(order);
-
-        Order order2 = Order.builder()
-                .member(member2)
-                .delivery(delivery2)
-                .orderItems(orderItems2)
-                .build();
-        em.persist(member2);
-        em.persist(book3);
-        em.persist(book4);
-        orderRepository.save(order2);
+        saveTestOrders();
 
         OrderSearch orderSearch = new OrderSearch();
         orderSearch.setMemberName(member2.getName());
@@ -145,6 +112,22 @@ public class OrderRepositoryTest extends OrderTestDataField {
 
         //when
         List<Order> actual = orderRepository.findAllByCriteria(orderSearch);
+
+        //then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void 주문_전체_조회_querydsl() {
+        //given
+        saveTestOrders();
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setMemberName(member2.getName());
+        List<Order> expected = Arrays.asList(order2);
+
+        //when
+        List<Order> actual = orderRepository.findAll(orderSearch);
 
         //then
         assertThat(actual).isEqualTo(expected);
@@ -211,6 +194,28 @@ public class OrderRepositoryTest extends OrderTestDataField {
         //then
         assertThat(actual).isEqualTo(expected);
         assertThat(actualValue).isEqualTo(expectedValue);
+    }
+
+    private void saveTestOrders() {
+        order = Order.builder()
+                .member(member1)
+                .delivery(delivery1)
+                .orderItems(orderItems1)
+                .build();
+        em.persist(member1);
+        em.persist(book1);
+        em.persist(book2);
+        orderRepository.save(order);
+
+        order2 = Order.builder()
+                .member(member2)
+                .delivery(delivery2)
+                .orderItems(orderItems2)
+                .build();
+        em.persist(member2);
+        em.persist(book3);
+        em.persist(book4);
+        orderRepository.save(order2);
     }
 
     @AfterEach

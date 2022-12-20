@@ -70,6 +70,6 @@ public class OrderService {
     }
 
     public List<Order> findAll(OrderSearch orderSearch) {
-        return orderRepository.findAllByString(orderSearch);
+        return orderRepository.findAll(orderSearch);
     }
 }
