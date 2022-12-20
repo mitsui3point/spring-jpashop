@@ -62,7 +62,7 @@ public class MemberOpenInViewService {
 
     @Transactional
     public UpdateMemberResponse updateMemberV2(Long id, @Valid UpdateMemberRequest request) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.changeName(request.getName());
 
         return UpdateMemberResponse.builder()

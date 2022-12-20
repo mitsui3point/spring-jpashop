@@ -34,7 +34,7 @@ public class MemberRepositoryTest extends MemberTestDataField {
         Member joinMember = memberA;
         //when
         memberRepository.save(joinMember);
-        Member joinedMember = memberRepository.findOne(joinMember.getId());
+        Member joinedMember = memberRepository.findById(joinMember.getId()).get();
         //then
         assertThat(joinMember).isEqualTo(joinedMember);
     }
